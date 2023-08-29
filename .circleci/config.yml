@@ -8,14 +8,12 @@ jobs:
   say-hello:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
-    # docker for jdk 17
     docker:
-      - image: circleci/openjdk:17
+      - image: cimg/base:stable
 
-    # JAVA_HOME env var
+    # set JAVA_HOME env
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
