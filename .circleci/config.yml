@@ -15,11 +15,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set up Java
-          command: |
-            export JAVA_HOME=/path/to/your/java
-            export PATH=$JAVA_HOME/bin:$PATH
-      - run:
           name: Run Kotlin Tests
           command: ./gradlew test
 
