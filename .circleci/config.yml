@@ -15,8 +15,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Set up Gradle Cache
+          command: |
+            gradle wrapper
+            ./gradlew dependencies
+
+      - run:
+          name: Run Kotlin Tests
+          command: ./gradlew test
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
