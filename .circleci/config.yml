@@ -15,12 +15,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set up Gradle Cache
-          command: |
-            gradle wrapper
-            ./gradlew dependencies
-
-      - run:
           name: Run Kotlin Tests
           command: ./gradlew test
 
