@@ -1,9 +1,22 @@
-class Car {
-    var name: String = ""
-    var brand: String = ""
-    var model: String = ""
-    var year: Int = 0
-    var color: String = ""
-    var image: String = ""
-    var isDeleted: Boolean = false
-}
+package com.tip.kuruma.models
+
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+
+@Entity
+@Table(name = "car")
+data class Car(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+    val name: String? = null,
+    val brand: String? = null,
+    val model: String? = null,
+    val years: Int? = null,
+    val color: String? = null,
+    val image: String? = null,
+    val isDeleted: Boolean? = false
+)

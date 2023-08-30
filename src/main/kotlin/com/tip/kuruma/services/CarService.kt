@@ -1,6 +1,6 @@
 package com.tip.kuruma.services
 
-import Car
+import com.tip.kuruma.models.Car
 import com.tip.kuruma.repositories.CarRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

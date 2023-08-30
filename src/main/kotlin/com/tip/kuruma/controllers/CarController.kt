@@ -1,6 +1,6 @@
 package com.tip.kuruma.controllers
 
-import Car
+import com.tip.kuruma.models.Car
 import com.tip.kuruma.services.CarService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
