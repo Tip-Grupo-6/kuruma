@@ -29,9 +29,20 @@ class CarController @Autowired constructor(
         return if (car != null) ResponseEntity.ok(car) else ResponseEntity.notFound().build()
     }
 
+    @PutMapping("/{id}")
+    fun updateCar(@PathVariable id: Long,@RequestBody carUpdate: Car ): ResponseEntity<Car> {
+        val car = carService.updateCar(id, carUpdate);
+        return ResponseEntity.ok(car)
+    }
+
     @DeleteMapping("/{id}")
     fun deleteCar(@PathVariable id: Long): ResponseEntity<Unit> {
-        carService.deleteCar(id)
-        return ResponseEntity.noContent().build()
+        val car = carService.getCarById(id)
+        if (car != null) {
+            car.isDeleted = true
+            carService.saveCar(car)
+            return ResponseEntity.noContent().build()
+        }
+        return ResponseEntity.notFound().build()
     }
 }

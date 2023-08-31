@@ -16,4 +16,19 @@ class CarService @Autowired constructor(
     fun getCarById(id: Long): Car? = carRepository.findById(id).orElse(null)
 
     fun deleteCar(id: Long) = carRepository.deleteById(id)
+
+    fun updateCar(id: Long, car: Car): Car {
+        val existingCar = carRepository.findById(id).orElse(null)
+        existingCar.name = car.name
+        existingCar.brand = car.brand
+        existingCar.model = car.model
+        existingCar.years = car.years
+        existingCar.color = car.color
+        existingCar.image = car.image
+        existingCar.isDeleted = car.isDeleted
+        existingCar.lastOilChange = car.lastOilChange
+        existingCar.lastWaterCheck = car.lastWaterCheck
+        existingCar.lastTirePressureCheck = car.lastTirePressureCheck
+        return carRepository.save(existingCar)
+    }
 }
