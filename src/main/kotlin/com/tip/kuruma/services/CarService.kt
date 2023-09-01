@@ -19,7 +19,6 @@ class CarService @Autowired constructor(
 
     fun updateCar(id: Long, car: Car): Car {
         val existingCar = carRepository.findById(id).orElse(null)
-        existingCar.name = car.name
         existingCar.brand = car.brand
         existingCar.model = car.model
         existingCar.years = car.years

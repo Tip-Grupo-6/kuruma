@@ -1,25 +1,28 @@
 package com.tip.kuruma.models
 
-import Car
 import org.junit.jupiter.api.Assertions.*
 
 class CarTest {
     @org.junit.jupiter.api.Test
     fun testCar() {
         val car = Car()
-        car.name = "Civic"
-        car.brand = "Honda"
-        car.model = "EX"
-        car.year = 2023
-        car.color = "Blue"
-        car.image = "civic.jpg"
+        car.brand = "Peugeot"
+        car.model = "208"
+        car.years = 2023
+        car.color = "Black"
+        car.image = "peugeot_208.jpg"
 
-        assertEquals("Civic", car.name)
-        assertEquals("Honda", car.brand)
-        assertEquals("EX", car.model)
-        assertEquals(2023, car.year)
-        assertEquals("Blue", car.color)
-        assertEquals("civic.jpg", car.image)
+        assertEquals("Peugeot", car.brand)
+        assertEquals("208", car.model)
+        assertEquals(2023, car.years)
+        assertEquals("Black", car.color)
+        assertEquals("peugeot_208.jpg", car.image)
         assertEquals(false, car.isDeleted)
+        assertEquals("Peugeot 208", car.name())
+
+        // next changes
+        assertEquals(car.lastOilChange.plusMonths(6), car.getNextOilChangeDue())
+        assertEquals(car.lastWaterCheck.plusMonths(3), car.getNextWaterCheckDue())
+        assertEquals(car.lastTirePressureCheck.plusMonths(2), car.getNextTirePressureCheckDue())
     }
 }

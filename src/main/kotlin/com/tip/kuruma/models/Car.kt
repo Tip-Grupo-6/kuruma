@@ -13,7 +13,6 @@ data class Car(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
-    var name: String? = null,
     var brand: String? = null,
     var model: String? = null,
     var years: Int? = null,
@@ -34,6 +33,10 @@ data class Car(
 
     fun getNextTirePressureCheckDue(): LocalDate {
         return lastTirePressureCheck.plusMonths(2) // Tire pressure check every 2 months
+    }
+
+    fun name(): String {
+        return "$brand $model"
     }
 
 }
