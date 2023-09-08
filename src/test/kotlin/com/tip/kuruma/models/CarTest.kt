@@ -1,5 +1,10 @@
 package com.tip.kuruma.models
 
+
+import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextOilChangeDue
+import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextTirePressureCheckDue
+import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextWaterCheckDue
+
 import org.junit.jupiter.api.Assertions.*
 
 class CarTest {
@@ -18,7 +23,7 @@ class CarTest {
         assertEquals("Black", car.color)
         assertEquals("peugeot_208.jpg", car.image)
         assertEquals(false, car.isDeleted)
-        assertEquals("Peugeot 208", car.name())
+        assertEquals("Peugeot 208", car.getName())
 
         // next changes
         assertEquals(car.lastOilChange.plusMonths(6), car.getNextOilChangeDue())

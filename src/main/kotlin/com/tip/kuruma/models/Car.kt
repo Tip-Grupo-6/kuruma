@@ -23,40 +23,7 @@ data class Car(
     var lastWaterCheck: LocalDate = LocalDate.now(),
     var lastTirePressureCheck: LocalDate = LocalDate.now()) {
 
-    fun getNextOilChangeDue(): LocalDate {
-        return lastOilChange.plusMonths(6)  // Oil change every 6 months
-    }
-
-    fun getNextWaterCheckDue(): LocalDate {
-        return lastWaterCheck.plusMonths(3) // Water level check every 3 months
-    }
-
-    fun getNextTirePressureCheckDue(): LocalDate {
-        return lastTirePressureCheck.plusMonths(2) // Tire pressure check every 2 months
-    }
-
     fun getName(): String {
         return "$brand $model"
-    }
-
-    fun getOilChangeDue(): Boolean {
-        return LocalDate.now().isAfter(getNextOilChangeDue())
-    }
-
-    fun getWaterCheckDue(): Boolean {
-        return LocalDate.now().isAfter(getNextWaterCheckDue())
-    }
-
-    fun getTirePressureCheckDue(): Boolean {
-        return LocalDate.now().isAfter(getNextTirePressureCheckDue())
-    }
-
-    // car semaphore status
-    fun getCarStatus(): String {
-        return when {
-            getOilChangeDue() && getWaterCheckDue() && getWaterCheckDue() -> "red"
-            getOilChangeDue() || getWaterCheckDue() || getWaterCheckDue() -> "yellow"
-            else -> "green"
-        }
     }
 }
