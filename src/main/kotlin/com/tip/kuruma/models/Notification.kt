@@ -12,5 +12,6 @@ data class Notification(
 
     @ManyToOne(fetch = FetchType.LAZY) // Many notifications can be associated with one car
     @JoinColumn(name = "car_id")
-    var car: Car? = null
+    var car: Car? = null,
+    var isDeleted: Boolean? = false
 )

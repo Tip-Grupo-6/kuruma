@@ -33,7 +33,7 @@ class CarController @Autowired constructor(
 
     @PutMapping("/{id}")
     fun updateCar(@PathVariable id: Long,@RequestBody carUpdate: Car ): ResponseEntity<CarDTO> {
-        val car = carService.updateCar(id, carUpdate);
+        val car = carService.updateCar(id, carUpdate)
         return ResponseEntity.ok(CarDTO.fromCar(car))
     }
 
