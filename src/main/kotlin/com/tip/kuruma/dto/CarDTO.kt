@@ -16,11 +16,11 @@ data class CarDTO(
     var years: Int? = null,
     var color: String? = null,
     var image: String? = null,
-    var isDeleted: Boolean? = false,
-    var lastOilChange: LocalDate ?= null,
-    var lastWaterCheck: LocalDate ?= null,
-    var lastTirePressureCheck: LocalDate ?= null,
-    val maintenanceValues: Map<String, Any>? = null
+    var is_deleted: Boolean? = false,
+    var last_oil_change: LocalDate ?= null,
+    var last_water_check: LocalDate ?= null,
+    var last_tire_pressure_check: LocalDate ?= null,
+    val maintenance_values: Map<String, Any>? = null
 
 ) {
     companion object {
@@ -33,18 +33,18 @@ data class CarDTO(
                 years = car.years,
                 color = car.color,
                 image = car.image,
-                isDeleted = car.isDeleted,
-                lastOilChange = car.lastOilChange,
-                lastWaterCheck = car.lastWaterCheck,
-                lastTirePressureCheck = car.lastTirePressureCheck,
-                maintenanceValues = mapOf(
-                    "NextOilChangeDue" to car.getNextWaterCheckDue(),
-                    "NextWaterCheckDue" to car.getNextWaterCheckDue(),
-                    "NextTirePressureCheckDue" to car.getNextTirePressureCheckDue(),
-                    "OilChangeDue" to car.getOilChangeDue(),
-                    "WaterCheckDue" to car.getWaterCheckDue(),
-                    "TirePressureCheckDue" to car.getTirePressureCheckDue(),
-                    "CarStatus" to car.getCarStatus()
+                is_deleted = car.isDeleted,
+                last_oil_change = car.lastOilChange,
+                last_water_check = car.lastWaterCheck,
+                last_tire_pressure_check = car.lastTirePressureCheck,
+                maintenance_values = mapOf(
+                    "next_oil_change_due" to car.getNextWaterCheckDue(),
+                    "next_water_check_due" to car.getNextWaterCheckDue(),
+                    "next_tire_pressure_check_due" to car.getNextTirePressureCheckDue(),
+                    "oil_change_due" to car.getOilChangeDue(),
+                    "water_check_due" to car.getWaterCheckDue(),
+                    "tire_pressure_check_due" to car.getTirePressureCheckDue(),
+                    "car_status" to car.getCarStatus()
                 ))
         }
 

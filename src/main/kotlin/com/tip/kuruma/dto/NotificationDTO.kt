@@ -6,19 +6,19 @@ import java.time.temporal.ChronoUnit
 
 data class NotificationDTO(
     var car : CarDTO? = null,
-    var isDeleted : Boolean? = false,
-    var maintenanceMessages: Map<String, Any>? = null
+    var is_deleted : Boolean? = false,
+    var maintenance_messages: Map<String, Any>? = null
 ) {
     companion object {
         fun fromNotification(notification: Notification): NotificationDTO {
             val notificationDTO = NotificationDTO(
                 car = notification.car?.let { CarDTO.fromCar(it) },
-                isDeleted = notification.isDeleted
+                is_deleted = notification.isDeleted
             )
-            notificationDTO.maintenanceMessages = mapOf(
-                "OilMessage" to notificationDTO.oilMaintenanceMessage(),
-                "WaterMessage" to notificationDTO.waterMaintenanceMessage(),
-                "TirePressureMessage" to notificationDTO.tireMaintenanceMessage()
+            notificationDTO.maintenance_messages = mapOf(
+                "oil_message" to notificationDTO.oilMaintenanceMessage(),
+                "water_message" to notificationDTO.waterMaintenanceMessage(),
+                "tire_pressure_message" to notificationDTO.tireMaintenanceMessage()
             )
             return notificationDTO
         }
@@ -30,7 +30,7 @@ data class NotificationDTO(
 
     fun oilMaintenanceMessage(): String {
         var adviceMessage: String = "Everything is up to date";
-        val oilChangeDueDate = car?.maintenanceValues?.get("NextOilChangeDue") as LocalDate?
+        val oilChangeDueDate = car?.maintenance_values?.get("NextOilChangeDue") as LocalDate?
         if (oilChangeDueDate != null) {
             val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), oilChangeDueDate)
             if (daysUntilDue in 0..30) {
@@ -46,7 +46,7 @@ data class NotificationDTO(
 
     fun waterMaintenanceMessage(): String {
         var adviceMessage: String = "Everything is up to date";
-        val waterCheckDueDate = car?.maintenanceValues?.get("NextWaterCheckDue") as LocalDate?
+        val waterCheckDueDate = car?.maintenance_values?.get("NextWaterCheckDue") as LocalDate?
         if (waterCheckDueDate != null) {
             val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), waterCheckDueDate)
             if (daysUntilDue in 0..30) {
@@ -62,7 +62,7 @@ data class NotificationDTO(
 
     fun tireMaintenanceMessage(): String {
         var adviceMessage: String = "Everything is up to date";
-        val tirePressureCheckDueDate = car?.maintenanceValues?.get("NextTirePressureCheckDue") as LocalDate?
+        val tirePressureCheckDueDate = car?.maintenance_values?.get("NextTirePressureCheckDue") as LocalDate?
         if (tirePressureCheckDueDate != null) {
             val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), tirePressureCheckDueDate)
             if (daysUntilDue in 0..30) {
