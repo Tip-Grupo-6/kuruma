@@ -19,7 +19,9 @@ class NotificationService @Autowired constructor(
 
     fun updateNotification(id: Long, notification: Notification): Notification {
         val notificationToUpdate = notificationRepository.findById(id).orElse(null)
-        notificationToUpdate?.message = notification.message
+        notificationToUpdate?.oilMessage = notification.oilMessage
+        notificationToUpdate?.waterMessage = notification.waterMessage
+        notificationToUpdate?.tirePressureMessage = notification.tirePressureMessage
         return notificationRepository.save(notificationToUpdate!!)
     }
 }

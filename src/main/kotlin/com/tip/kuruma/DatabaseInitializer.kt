@@ -56,15 +56,12 @@ class DatabaseInitializate : CommandLineRunner {
 
 		// Create some notifications
 		val notification1 = com.tip.kuruma.models.Notification(
-			message = "",
 			car = car1
 		)
 		val notification2 = com.tip.kuruma.models.Notification(
-			message = "",
 			car = car2
 		)
 		val notification3 = com.tip.kuruma.models.Notification(
-			message = "",
 			car = car3
 		)
 
