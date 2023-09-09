@@ -2,6 +2,7 @@ package com.tip.kuruma.dto
 
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getCarStatus
+import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextOilChangeDue
 import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextTirePressureCheckDue
 import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextWaterCheckDue
 import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getOilChangeDue
@@ -20,7 +21,7 @@ data class CarDTO(
     var last_oil_change: LocalDate ?= null,
     var last_water_check: LocalDate ?= null,
     var last_tire_pressure_check: LocalDate ?= null,
-    val maintenance_values: Map<String, Any>? = null
+    val maintenance_values: MaintenanceStatusDTO? = null
 
 ) {
     companion object {
@@ -37,15 +38,16 @@ data class CarDTO(
                 last_oil_change = car.lastOilChange,
                 last_water_check = car.lastWaterCheck,
                 last_tire_pressure_check = car.lastTirePressureCheck,
-                maintenance_values = mapOf(
-                    "next_oil_change_due" to car.getNextWaterCheckDue(),
-                    "next_water_check_due" to car.getNextWaterCheckDue(),
-                    "next_tire_pressure_check_due" to car.getNextTirePressureCheckDue(),
-                    "oil_change_due" to car.getOilChangeDue(),
-                    "water_check_due" to car.getWaterCheckDue(),
-                    "tire_pressure_check_due" to car.getTirePressureCheckDue(),
-                    "car_status" to car.getCarStatus()
-                ))
+                maintenance_values = MaintenanceStatusDTO(
+                    car.getNextOilChangeDue(),
+                    car.getNextWaterCheckDue(),
+                    car.getNextTirePressureCheckDue(),
+                    car.getOilChangeDue(),
+                    car.getWaterCheckDue(),
+                    car.getTirePressureCheckDue(),
+                    car.getCarStatus()
+                )
+            )
         }
 
         fun fromCars(cars: List<Car>): List<CarDTO> {
