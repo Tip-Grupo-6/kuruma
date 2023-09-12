@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: adoptium/adoptium-openjdk:17-jdk
+      - image: openjdk:17-jdk-slim
     steps:
       - checkout  # Checkout your code from the repository
       - run:
