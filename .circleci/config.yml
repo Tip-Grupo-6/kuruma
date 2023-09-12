@@ -15,12 +15,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-      # run kotlin model tests
-      - run:
           name: "Run tests"
-          command: "gradle test
+          command: "gradle test"
+
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
