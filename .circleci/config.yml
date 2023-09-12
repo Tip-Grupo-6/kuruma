@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:17.0.8
+      - image: adoptopenjdk:17-jdk
     steps:
       - checkout
       - run: java -version
