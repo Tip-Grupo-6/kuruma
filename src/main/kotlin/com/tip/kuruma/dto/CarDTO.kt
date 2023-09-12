@@ -1,13 +1,6 @@
 package com.tip.kuruma.dto
 
 import com.tip.kuruma.models.Car
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getCarStatus
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextOilChangeDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextTirePressureCheckDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextWaterCheckDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getOilChangeDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getTirePressureCheckDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getWaterCheckDue
 import java.time.LocalDate
 
 data class CarDTO(
@@ -35,17 +28,7 @@ data class CarDTO(
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,
-                last_oil_change = car.lastOilChange,
-                last_water_check = car.lastWaterCheck,
-                last_tire_pressure_check = car.lastTirePressureCheck,
                 maintenance_values = MaintenanceStatusDTO(
-                    car.getNextOilChangeDue(),
-                    car.getNextWaterCheckDue(),
-                    car.getNextTirePressureCheckDue(),
-                    car.getOilChangeDue(),
-                    car.getWaterCheckDue(),
-                    car.getTirePressureCheckDue(),
-                    car.getCarStatus()
                 )
             )
         }

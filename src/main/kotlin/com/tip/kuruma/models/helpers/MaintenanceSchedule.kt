@@ -3,7 +3,7 @@ package com.tip.kuruma.models.helpers
 import com.tip.kuruma.models.Car
 
 import java.time.LocalDate
-
+/*
 class MaintenanceSchedule {
     companion object ScheduleCarUtils {
         fun Car.getNextOilChangeDue(): LocalDate {
@@ -39,3 +39,4 @@ class MaintenanceSchedule {
         }
     }
 }
+*/

@@ -1,11 +1,7 @@
 package com.tip.kuruma.models
 
-
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextOilChangeDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextTirePressureCheckDue
-import com.tip.kuruma.models.helpers.MaintenanceSchedule.ScheduleCarUtils.getNextWaterCheckDue
-
 import org.junit.jupiter.api.Assertions.*
+import java.time.LocalDate
 
 class CarTest {
     @org.junit.jupiter.api.Test
@@ -16,6 +12,13 @@ class CarTest {
         car.years = 2023
         car.color = "Black"
         car.image = "peugeot_208.jpg"
+        // car items
+        val carItem = CarItem()
+        carItem.name = "Oil"
+        carItem.last_change = LocalDate.now()
+        carItem.next_change_due = LocalDate.now().plusMonths(6)
+        carItem.status = false
+        car.carItems = listOf(carItem)
 
         assertEquals("Peugeot", car.brand)
         assertEquals("208", car.model)
@@ -24,10 +27,9 @@ class CarTest {
         assertEquals("peugeot_208.jpg", car.image)
         assertEquals(false, car.isDeleted)
         assertEquals("Peugeot 208", car.getName())
-
-        // next changes
-        assertEquals(car.lastOilChange.plusMonths(6), car.getNextOilChangeDue())
-        assertEquals(car.lastWaterCheck.plusMonths(3), car.getNextWaterCheckDue())
-        assertEquals(car.lastTirePressureCheck.plusMonths(2), car.getNextTirePressureCheckDue())
+        assertEquals("Oil", car.carItems?.get(0)?.name)
+        assertEquals(LocalDate.now(), car.carItems?.get(0)?.last_change)
+        assertEquals(LocalDate.now().plusMonths(6), car.carItems?.get(0)?.next_change_due)
+        assertEquals(false, car.carItems?.get(0)?.status)
     }
 }
