@@ -5,6 +5,10 @@ jobs:
     docker:
       - image: adoptium/adoptium-openjdk:17-jdk
     steps:
-      - checkout
-      - run: java -version
-      - run: ./gradlew test
+      - checkout  # Checkout your code from the repository
+      - run:
+          name: Check Java Version
+          command: java -version
+      - run:
+          name: Build and Test
+          command: ./gradlew test
