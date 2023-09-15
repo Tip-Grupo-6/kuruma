@@ -15,11 +15,14 @@ data class Car(
     var color: String? = null,
     var image: String? = null,
     var isDeleted: Boolean? = false,
-    // car items
     @ManyToMany(fetch = FetchType.LAZY)
     var carItems: List<CarItem>? = null,) {
 
     fun getName(): String {
         return "$brand $model"
+    }
+
+    override fun toString(): String {
+        return "Car(id=$id, brand=$brand, model=$model, years=$years, color=$color, image=$image, isDeleted=$isDeleted)"
     }
 }

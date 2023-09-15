@@ -17,5 +17,9 @@ data class CarItem(
     var last_change: LocalDate = LocalDate.now(),
     var next_change_due: LocalDate? = null,
     var replacement_frequency: Int = 0,
-    var due_status: Boolean = false){
+    var due_status: Boolean? = false){
+
+    override fun toString(): String {
+        return "CarItem(id=$id, name=$name, last_change=$last_change, next_change_due=$next_change_due, replacement_frequency=$replacement_frequency, due_status=$due_status)"
+    }
 }

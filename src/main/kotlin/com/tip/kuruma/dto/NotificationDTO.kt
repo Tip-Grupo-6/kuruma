@@ -27,7 +27,6 @@ data class NotificationDTO(
     }
 
     private fun generateMaintenanceMessages(carItems: List<CarItemDTO>?): Map<String, String> {
-        println(carItems)
         val maintenanceMessages = mutableMapOf<String, String>()
 
         carItems?.forEach { carItem ->
@@ -38,19 +37,15 @@ data class NotificationDTO(
         return maintenanceMessages
     }
     fun maintenanceMessage(carItem: CarItemDTO): String {
-        var adviceMessage: String = "Everything is up to date";
-        println("ChangeDueDate")
-        println( carItem.next_change_due)
+        val carItemName = carItem.name
+        var adviceMessage: String = "$carItemName is up to date";
         val ChangeDueDate = carItem.next_change_due as LocalDate?
         val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), ChangeDueDate)
-        val carItemName = carItem.name
-        println("days until due")
-        println(daysUntilDue)
         if (daysUntilDue in 0..30) {
             adviceMessage = "Change $carItemName within $daysUntilDue days"
         }
         else if (daysUntilDue < 0) {
-            adviceMessage = "$carItemName.name change is overdue"
+            adviceMessage = "$carItemName change is overdue"
         }
 
         return adviceMessage

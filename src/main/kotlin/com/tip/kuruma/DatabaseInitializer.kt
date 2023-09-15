@@ -52,19 +52,22 @@ class DatabaseInitializate : CommandLineRunner {
 			name = "Oil",
 			last_change = LocalDate.now().minusMonths(9),
 			replacement_frequency = 6,
-			due_status = false
+			due_status = false,
+			car = car1
 		)
 		val carItem2 = com.tip.kuruma.models.CarItem(
-			name = "Tires",
-			last_change = LocalDate.now(),
+			name = "Tire pressure",
+			last_change = LocalDate.now().minusMonths(9),
 			replacement_frequency = 2,
-			due_status = false
+			due_status = false,
+			car = car1
 		)
 		val carItem3 = com.tip.kuruma.models.CarItem(
 			name = "Water",
-			last_change = LocalDate.now(),
+			last_change = LocalDate.now().minusMonths(9),
 			replacement_frequency = 3,
-			due_status = false
+			due_status = false,
+			car = car1
 		)
 
 		carItemService.saveCarItem(carItem1)
@@ -75,37 +78,43 @@ class DatabaseInitializate : CommandLineRunner {
 			name = "Oil",
 			last_change = LocalDate.now().minusMonths(9),
 			replacement_frequency = 6,
-			due_status = false
+			due_status = false,
+			car = car2
 		)
 		val carItem5 = com.tip.kuruma.models.CarItem(
-			name = "Tires",
+			name = "Tire pressure",
 			last_change = LocalDate.now(),
 			replacement_frequency = 2,
-			due_status = false
+			due_status = false,
+			car = car2
 		)
 		val carItem6 = com.tip.kuruma.models.CarItem(
 			name = "Water",
 			last_change = LocalDate.now(),
 			replacement_frequency = 3,
-			due_status = false
+			due_status = false,
+			car = car2
 		)
 		val carItem7 = com.tip.kuruma.models.CarItem(
 			name = "Oil",
 			last_change = LocalDate.now().minusMonths(6),
 			replacement_frequency = 6,
-			due_status = false
+			due_status = false,
+			car = car3
 		)
 		val carItem8 = com.tip.kuruma.models.CarItem(
-			name = "Tires",
+			name = "Tire pressure",
 			last_change = LocalDate.now().minusMonths(2),
 			replacement_frequency = 2,
-			due_status = false
+			due_status = false,
+			car = car3
 		)
 		val carItem9 = com.tip.kuruma.models.CarItem(
 			name = "Water",
 			last_change = LocalDate.now().minusMonths(3),
 			replacement_frequency = 3,
-			due_status = false
+			due_status = false,
+			car = car3
 		)
 
 		carItemService.saveCarItem(carItem4)
