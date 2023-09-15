@@ -15,6 +15,7 @@ data class CarItem(
     var isDeleted: Boolean? = false,
     var name: String? = null,
     var last_change: LocalDate = LocalDate.now(),
-    var next_change_due: LocalDate = LocalDate.now(),
-    var status: Boolean = false){
+    var next_change_due: LocalDate? = null,
+    var replacement_frequency: Int = 0,
+    var due_status: Boolean = false){
 }

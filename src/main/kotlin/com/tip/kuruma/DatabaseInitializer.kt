@@ -1,6 +1,7 @@
 package com.tip.kuruma
 
 import com.tip.kuruma.models.Car
+import com.tip.kuruma.services.CarItemService
 import com.tip.kuruma.services.CarService
 import com.tip.kuruma.services.NotificationService
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,8 @@ class DatabaseInitializate : CommandLineRunner {
     lateinit var carService: CarService
 	@Autowired
 	lateinit var notificationService: NotificationService
+	@Autowired
+	lateinit var carItemService: CarItemService
 
     override fun run(vararg args: String?) {
 
@@ -43,6 +46,86 @@ class DatabaseInitializate : CommandLineRunner {
 		carService.saveCar(car1)
 		carService.saveCar(car2)
 		carService.saveCar(car3)
+
+		// some car items
+		val carItem1 = com.tip.kuruma.models.CarItem(
+			name = "Oil",
+			last_change = LocalDate.now().minusMonths(9),
+			replacement_frequency = 6,
+			due_status = false
+		)
+		val carItem2 = com.tip.kuruma.models.CarItem(
+			name = "Tires",
+			last_change = LocalDate.now(),
+			replacement_frequency = 2,
+			due_status = false
+		)
+		val carItem3 = com.tip.kuruma.models.CarItem(
+			name = "Water",
+			last_change = LocalDate.now(),
+			replacement_frequency = 3,
+			due_status = false
+		)
+
+		carItemService.saveCarItem(carItem1)
+		carItemService.saveCarItem(carItem2)
+		carItemService.saveCarItem(carItem3)
+
+		val carItem4 = com.tip.kuruma.models.CarItem(
+			name = "Oil",
+			last_change = LocalDate.now().minusMonths(9),
+			replacement_frequency = 6,
+			due_status = false
+		)
+		val carItem5 = com.tip.kuruma.models.CarItem(
+			name = "Tires",
+			last_change = LocalDate.now(),
+			replacement_frequency = 2,
+			due_status = false
+		)
+		val carItem6 = com.tip.kuruma.models.CarItem(
+			name = "Water",
+			last_change = LocalDate.now(),
+			replacement_frequency = 3,
+			due_status = false
+		)
+		val carItem7 = com.tip.kuruma.models.CarItem(
+			name = "Oil",
+			last_change = LocalDate.now().minusMonths(6),
+			replacement_frequency = 6,
+			due_status = false
+		)
+		val carItem8 = com.tip.kuruma.models.CarItem(
+			name = "Tires",
+			last_change = LocalDate.now().minusMonths(2),
+			replacement_frequency = 2,
+			due_status = false
+		)
+		val carItem9 = com.tip.kuruma.models.CarItem(
+			name = "Water",
+			last_change = LocalDate.now().minusMonths(3),
+			replacement_frequency = 3,
+			due_status = false
+		)
+
+		carItemService.saveCarItem(carItem4)
+		carItemService.saveCarItem(carItem5)
+		carItemService.saveCarItem(carItem6)
+		carItemService.saveCarItem(carItem7)
+		carItemService.saveCarItem(carItem8)
+		carItemService.saveCarItem(carItem9)
+
+		// associate car items with cars
+		car1.carItems = listOf(carItem1, carItem2, carItem3)
+		car2.carItems = listOf(carItem4, carItem5, carItem6)
+		car3.carItems = listOf(carItem7, carItem8, carItem9)
+
+
+		// save cars and car items
+		carService.saveCar(car1)
+		carService.saveCar(car2)
+		carService.saveCar(car3)
+
 
 
 		// Create some notifications

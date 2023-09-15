@@ -1,7 +1,6 @@
 package com.tip.kuruma.dto
 
 import com.tip.kuruma.models.Car
-import java.time.LocalDate
 
 data class CarDTO(
     var id: Long? = null,
@@ -11,10 +10,8 @@ data class CarDTO(
     var color: String? = null,
     var image: String? = null,
     var is_deleted: Boolean? = false,
-    var last_oil_change: LocalDate ?= null,
-    var last_water_check: LocalDate ?= null,
-    var last_tire_pressure_check: LocalDate ?= null,
-    val maintenance_values: MaintenanceStatusDTO? = null
+    val maintenance_values: List<CarItemDTO>? = null,
+    var statusColor: String? = null
 
 ) {
     companion object {
@@ -28,8 +25,16 @@ data class CarDTO(
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,
-                maintenance_values = MaintenanceStatusDTO(
-                )
+                maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) },
+                statusColor =
+                when {
+                   // all carItem due status are true
+                    car.carItems?.all { it.due_status } == true -> "red"
+                    // at least one carItem due status is true
+                    car.carItems?.any { it.due_status } == true -> "yellow"
+                    // all carItem due status are false
+                    else -> "green"
+                }
             )
         }
 

@@ -17,7 +17,7 @@ class CarTest {
         carItem.name = "Oil"
         carItem.last_change = LocalDate.now()
         carItem.next_change_due = LocalDate.now().plusMonths(6)
-        carItem.status = false
+        carItem.due_status = false
         car.carItems = listOf(carItem)
 
         assertEquals("Peugeot", car.brand)
@@ -30,6 +30,6 @@ class CarTest {
         assertEquals("Oil", car.carItems?.get(0)?.name)
         assertEquals(LocalDate.now(), car.carItems?.get(0)?.last_change)
         assertEquals(LocalDate.now().plusMonths(6), car.carItems?.get(0)?.next_change_due)
-        assertEquals(false, car.carItems?.get(0)?.status)
+        assertEquals(false, car.carItems?.get(0)?.due_status)
     }
 }
