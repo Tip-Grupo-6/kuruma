@@ -1,10 +1,6 @@
 package com.tip.kuruma.models
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
@@ -19,11 +15,14 @@ data class Car(
     var color: String? = null,
     var image: String? = null,
     var isDeleted: Boolean? = false,
-    var lastOilChange: LocalDate = LocalDate.now(),
-    var lastWaterCheck: LocalDate = LocalDate.now(),
-    var lastTirePressureCheck: LocalDate = LocalDate.now()) {
+    @ManyToMany(fetch = FetchType.LAZY)
+    var carItems: List<CarItem>? = null,) {
 
     fun getName(): String {
         return "$brand $model"
+    }
+
+    override fun toString(): String {
+        return "Car(id=$id, brand=$brand, model=$model, years=$years, color=$color, image=$image, isDeleted=$isDeleted)"
     }
 }

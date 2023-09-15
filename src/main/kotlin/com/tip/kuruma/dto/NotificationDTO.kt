@@ -15,11 +15,9 @@ data class NotificationDTO(
                 car = notification.car?.let { CarDTO.fromCar(it) },
                 is_deleted = notification.isDeleted
             )
-            notificationDTO.maintenance_messages = mapOf(
-                "oil_message" to notificationDTO.oilMaintenanceMessage(),
-                "water_message" to notificationDTO.waterMaintenanceMessage(),
-                "tire_pressure_message" to notificationDTO.tireMaintenanceMessage()
-            )
+            notificationDTO.maintenance_messages = notificationDTO.generateMaintenanceMessages(CarItemDTO.fromCarItems(
+                notification.car?.carItems
+            ))
             return notificationDTO
         }
 
@@ -28,51 +26,29 @@ data class NotificationDTO(
         }
     }
 
-    fun oilMaintenanceMessage(): String {
-        var adviceMessage: String = "Everything is up to date";
-        val oilChangeDueDate = car?.maintenance_values?.nextOilChangeDue as LocalDate?
-        if (oilChangeDueDate != null) {
-            val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), oilChangeDueDate)
-            if (daysUntilDue in 0..30) {
-                adviceMessage = "Oil change is due within this month"
-            }
-            else if (daysUntilDue < 0) {
-                adviceMessage = "Oil change is overdue"
-            }
+    private fun generateMaintenanceMessages(carItems: List<CarItemDTO>?): Map<String, String> {
+        val maintenanceMessages = mutableMapOf<String, String>()
+
+        carItems?.forEach { carItem ->
+            val maintenanceMessage = maintenanceMessage(carItem)
+            maintenanceMessages[carItem.name ?: "Unknown"] = maintenanceMessage
+        }
+
+        return maintenanceMessages
+    }
+    fun maintenanceMessage(carItem: CarItemDTO): String {
+        val carItemName = carItem.name
+        var adviceMessage: String = "$carItemName is up to date";
+        val ChangeDueDate = carItem.next_change_due as LocalDate?
+        val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), ChangeDueDate)
+        if (daysUntilDue in 0..30) {
+            adviceMessage = "Change $carItemName within $daysUntilDue days"
+        }
+        else if (daysUntilDue < 0) {
+            adviceMessage = "$carItemName change is overdue"
         }
 
         return adviceMessage
     }
 
-    fun waterMaintenanceMessage(): String {
-        var adviceMessage: String = "Everything is up to date";
-        val waterCheckDueDate = car?.maintenance_values?.nextWaterCheckDue as LocalDate?
-        if (waterCheckDueDate != null) {
-            val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), waterCheckDueDate)
-            if (daysUntilDue in 0..30) {
-                adviceMessage = "Water check is due within this month"
-            }
-            else if (daysUntilDue < 0) {
-                adviceMessage = "Water check is overdue"
-            }
-        }
-
-        return adviceMessage
-    }
-
-    fun tireMaintenanceMessage(): String {
-        var adviceMessage: String = "Everything is up to date";
-        val tirePressureCheckDueDate = car?.maintenance_values?.nextTirePressureCheckDue as LocalDate?
-        if (tirePressureCheckDueDate != null) {
-            val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), tirePressureCheckDueDate)
-            if (daysUntilDue in 0..30) {
-                adviceMessage = "Tire pressure check is due within this month"
-            }
-            else if (daysUntilDue < 0) {
-                adviceMessage = "Tire pressure check is overdue"
-            }
-        }
-
-        return adviceMessage
-    }
 }

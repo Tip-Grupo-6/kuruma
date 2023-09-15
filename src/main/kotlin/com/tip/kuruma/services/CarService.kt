@@ -25,9 +25,6 @@ class CarService @Autowired constructor(
         existingCar.color = car.color
         existingCar.image = car.image
         existingCar.isDeleted = car.isDeleted
-        existingCar.lastOilChange = car.lastOilChange
-        existingCar.lastWaterCheck = car.lastWaterCheck
-        existingCar.lastTirePressureCheck = car.lastTirePressureCheck
         return carRepository.save(existingCar)
     }
 }

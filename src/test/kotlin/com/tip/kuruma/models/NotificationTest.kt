@@ -14,10 +14,7 @@ class NotificationTest {
                 model = "Corolla",
                 years = 2015,
                 color = "Red",
-                image = "toyota_corolla.jpg",
-                lastOilChange = LocalDate.now().minusMonths(9),
-                lastWaterCheck = LocalDate.now().minusMonths(9),
-                lastTirePressureCheck = LocalDate.now().minusMonths(9)
+                image = "toyota_corolla.jpg"
             ),
             isDeleted = false,
             oilMessage = "Oil change is due within this month",
