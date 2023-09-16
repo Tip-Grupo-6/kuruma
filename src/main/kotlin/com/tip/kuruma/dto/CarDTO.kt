@@ -20,7 +20,7 @@ data class CarDTO(
                 id = car.id,
                 brand = car.brand,
                 model = car.model,
-                years = car.years,
+                years = car.year,
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,

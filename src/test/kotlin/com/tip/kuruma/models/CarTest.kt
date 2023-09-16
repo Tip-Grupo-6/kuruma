@@ -9,7 +9,7 @@ class CarTest {
         val car = Car()
         car.brand = "Peugeot"
         car.model = "208"
-        car.years = 2023
+        car.year = 2023
         car.color = "Black"
         car.image = "peugeot_208.jpg"
 
@@ -23,7 +23,7 @@ class CarTest {
         // car
         assertEquals("Peugeot", car.brand)
         assertEquals("208", car.model)
-        assertEquals(2023, car.years)
+        assertEquals(2023, car.year)
         assertEquals("Black", car.color)
         assertEquals("peugeot_208.jpg", car.image)
         assertEquals(false, car.isDeleted)

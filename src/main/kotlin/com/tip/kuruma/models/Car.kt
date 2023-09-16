@@ -10,7 +10,7 @@ data class Car(
     var id: Long? = null,
     var brand: String? = null,
     var model: String? = null,
-    var years: Int? = null,
+    var year: Int? = null,
     var color: String? = null,
     var image: String? = null,
     var isDeleted: Boolean? = false,
@@ -27,6 +27,6 @@ data class Car(
     }
 
     override fun toString(): String {
-        return "Car(id=$id, brand=$brand, model=$model, years=$years, color=$color, image=$image, isDeleted=$isDeleted)"
+        return "Car(id=$id, brand=$brand, model=$model, years=$year, color=$color, image=$image, isDeleted=$isDeleted)"
     }
 }

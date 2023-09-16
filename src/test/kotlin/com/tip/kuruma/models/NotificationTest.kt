@@ -10,7 +10,7 @@ class NotificationTest {
             car = Car(
                 brand = "Toyota",
                 model = "Corolla",
-                years = 2015,
+                year = 2015,
                 color = "Red",
                 image = "toyota_corolla.jpg"
             ),

@@ -23,7 +23,7 @@ class CarService @Autowired constructor(
         val existingCar = carRepository.findById(id).orElse(null)
         existingCar.brand = car.brand
         existingCar.model = car.model
-        existingCar.years = car.years
+        existingCar.year = car.year
         existingCar.color = car.color
         existingCar.image = car.image
         existingCar.isDeleted = car.isDeleted
