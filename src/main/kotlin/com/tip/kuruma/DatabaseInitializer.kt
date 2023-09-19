@@ -125,9 +125,9 @@ class DatabaseInitializate : CommandLineRunner {
 		carItemService.saveCarItem(carItem9)
 
 		// associate car items with cars
-		car1.carItems = listOf(carItem1, carItem2, carItem3)
-		car2.carItems = listOf(carItem4, carItem5, carItem6)
-		car3.carItems = listOf(carItem7, carItem8, carItem9)
+		car1.carItems = listOf(carItem1, carItem2, carItem3).toMutableList()
+		car2.carItems = listOf(carItem4, carItem5, carItem6).toMutableList()
+		car3.carItems = listOf(carItem7, carItem8, carItem9).toMutableList()
 
 
 		// save cars and car items

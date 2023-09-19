@@ -60,7 +60,7 @@ class CarController @Autowired constructor(
             car.isDeleted = true
             carService.saveCar(car)
             return ResponseEntity.status(HttpStatus.OK)
-                .body(mapOf("message" to " ${car.getName()} deleted"))
+                .body(mapOf("message" to "${car.getName()} deleted"))
         } else {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(mapOf("message" to "Car $id not found"))

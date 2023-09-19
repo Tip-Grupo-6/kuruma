@@ -24,7 +24,7 @@ data class CarDTO(
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,
-                maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) }
+                maintenance_values = car.carItems.let { CarItemDTO.fromCarItems(it) }
             )
             carDTO.status_color = carDTO.maintenance_values?.let { carDTO.getCarStatusColor(it) }
 

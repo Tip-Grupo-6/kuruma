@@ -1,9 +1,7 @@
 package com.tip.kuruma.models
 
-import com.tip.kuruma.dto.NotificationDTO
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class NotificationTest {
     @Test
