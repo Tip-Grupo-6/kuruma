@@ -9,9 +9,7 @@ data class CarItem(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
-    @ManyToOne(fetch = FetchType.LAZY) // Many car items can be associated with one car
-    @JoinColumn(name = "car_id")
-    var car: Car? = null,
+    var car_id: Long? = null,
     var isDeleted: Boolean? = false,
     var name: String? = null,
     var last_change: LocalDate = LocalDate.now(),

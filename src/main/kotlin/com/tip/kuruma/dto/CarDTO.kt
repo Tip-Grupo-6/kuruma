@@ -47,4 +47,17 @@ data class CarDTO(
             else -> "green"
         }
     }
+
+    fun toCar(): Car {
+        return Car(
+            brand = this.brand,
+            model = this.model,
+            year = this.years,
+            color = this.color,
+            image = this.image,
+            carItems = this.maintenance_values?.map {
+                it.toCarItem()
+            }
+        )
+    }
 }
