@@ -6,7 +6,7 @@ data class CarDTO(
     var id: Long? = null,
     var brand: String? = null,
     var model: String? = null,
-    var years: Int? = null,
+    var year: Int? = null,
     var color: String? = null,
     var image: String? = null,
     var is_deleted: Boolean? = false,
@@ -20,11 +20,11 @@ data class CarDTO(
                 id = car.id,
                 brand = car.brand,
                 model = car.model,
-                years = car.years,
+                year = car.year,
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,
-                maintenance_values = car.carItems.let { CarItemDTO.fromCarItems(it) }
+                maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) }
             )
             carDTO.status_color = carDTO.maintenance_values?.let { carDTO.getCarStatusColor(it) }
 
@@ -46,5 +46,18 @@ data class CarDTO(
             // all carItem due status are false
             else -> "green"
         }
+    }
+
+    fun toCar(): Car {
+        return Car(
+            brand = this.brand,
+            model = this.model,
+            year = this.year,
+            color = this.color,
+            image = this.image,
+            carItems = this.maintenance_values?.map {
+                it.toCarItem()
+            }
+        )
     }
 }

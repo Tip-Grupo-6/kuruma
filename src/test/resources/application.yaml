@@ -9,15 +9,19 @@ spring:
     resources:
       add-mappings: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/kuruma
-    username: postgres
-    password: postgres
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
 
   jpa:
+    hibernate:
+      ddl-auto: update
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+
+  sql:
+    init:
+      mode: always
 
 # actuator configs for endpoint to get health
 # GET /actuator/health

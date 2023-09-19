@@ -7,26 +7,23 @@ import jakarta.persistence.*
 data class Car(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-    var brand: String? = null,
-    var model: String? = null,
-    var years: Int? = null,
-    var color: String? = null,
-    var image: String? = null,
-    var isDeleted: Boolean? = false,
-
-    @OneToMany(mappedBy = "car", cascade = [CascadeType.ALL], orphanRemoval = true,  fetch = FetchType.EAGER)
-    var carItems: List<CarItem> = mutableListOf(),  // Use MutableList instead of List
-
-    @OneToMany(mappedBy = "car", cascade = [CascadeType.ALL], orphanRemoval = true,  fetch = FetchType.EAGER)
-    val notifications: MutableList<Notification> = mutableListOf()  // Use MutableList instead of List
-){
+    val id: Long? = null,
+    val brand: String? = null,
+    val model: String? = null,
+    @Column(name = "`year`")
+    val year: Int? = null,
+    val color: String? = null,
+    val image: String? = null,
+    val isDeleted: Boolean? = false,
+    @OneToMany(mappedBy = "car_id", fetch = FetchType.EAGER)
+    val carItems: List<CarItem>? = null
+) {
 
     fun getName(): String {
         return "$brand $model"
     }
 
     override fun toString(): String {
-        return "Car(id=$id, brand=$brand, model=$model, years=$years, color=$color, image=$image, isDeleted=$isDeleted)"
+        return "Car(id=$id, brand=$brand, model=$model, years=$year, color=$color, image=$image, isDeleted=$isDeleted)"
     }
 }
