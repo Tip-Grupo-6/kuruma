@@ -38,13 +38,13 @@ data class CarDTO(
     }
 
     fun getCarStatusColor(carItems: List<CarItemDTO>): String {
-        when {
+        return when {
             // all carItem due status are true
-            carItems?.all { it.due_status == true } ?: false -> return "red"
+            carItems.all { it.due_status }-> "red"
             // at least one carItem due status is true
-            carItems?.any { it.due_status == true } ?: false -> return "yellow"
+            carItems.any { it.due_status} -> "yellow"
             // all carItem due status are false
-            else -> return "green"
+            else -> "green"
         }
     }
 }
