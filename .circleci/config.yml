@@ -10,5 +10,8 @@ jobs:
           name: Check Java Version
           command: java -version
       - run:
-          name: Build and Test
-          command: ./gradlew test
+          name: Model tests
+          command: ./gradlew test --tests "com.tip.kuruma.models.*"
+      - run:
+            name: Controller tests
+            command: ./gradlew test --tests "com.tip.kuruma.controllers.*"
