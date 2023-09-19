@@ -1,7 +1,6 @@
 package com.tip.kuruma.models
 
 import jakarta.persistence.*
-import java.time.LocalDate
 
 @Entity
 @Table(name = "car")
@@ -15,8 +14,13 @@ data class Car(
     var color: String? = null,
     var image: String? = null,
     var isDeleted: Boolean? = false,
-    @ManyToMany(fetch = FetchType.LAZY)
-    var carItems: List<CarItem>? = null,) {
+
+    @OneToMany(mappedBy = "car", cascade = [CascadeType.ALL], orphanRemoval = true,  fetch = FetchType.EAGER)
+    var carItems: List<CarItem> = mutableListOf(),  // Use MutableList instead of List
+
+    @OneToMany(mappedBy = "car", cascade = [CascadeType.ALL], orphanRemoval = true,  fetch = FetchType.EAGER)
+    val notifications: MutableList<Notification> = mutableListOf()  // Use MutableList instead of List
+){
 
     fun getName(): String {
         return "$brand $model"

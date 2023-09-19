@@ -24,7 +24,7 @@ data class CarDTO(
                 color = car.color,
                 image = car.image,
                 is_deleted = car.isDeleted,
-                maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) }
+                maintenance_values = car.carItems.let { CarItemDTO.fromCarItems(it) }
             )
             carDTO.status_color = carDTO.maintenance_values?.let { carDTO.getCarStatusColor(it) }
 
@@ -38,13 +38,13 @@ data class CarDTO(
     }
 
     fun getCarStatusColor(carItems: List<CarItemDTO>): String {
-        when {
+        return when {
             // all carItem due status are true
-            carItems?.all { it.due_status == true } ?: false -> return "red"
+            carItems.all { it.due_status }-> "red"
             // at least one carItem due status is true
-            carItems?.any { it.due_status == true } ?: false -> return "yellow"
+            carItems.any { it.due_status} -> "yellow"
             // all carItem due status are false
-            else -> return "green"
+            else -> "green"
         }
     }
 }
