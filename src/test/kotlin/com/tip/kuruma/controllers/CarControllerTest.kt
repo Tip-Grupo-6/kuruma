@@ -143,6 +143,13 @@ class CarControllerTest {
         // Check if the car with id 1 is deleted
         val car = carService?.getCarById(3L)
         assert(car?.isDeleted == true)
+
+        // try to delete a fake id car
+        val responseEntity2: ResponseEntity<Any> = carController?.deleteCar(10L) as ResponseEntity<Any>
+        assert(responseEntity2.statusCode == HttpStatus.NOT_FOUND)
+        // assert responseEntity2 message
+        val responseBody2 = responseEntity2.body as Map<*, *>
+        assert(responseBody2["message"] == "Car 10 not found")
     }
 
 }
