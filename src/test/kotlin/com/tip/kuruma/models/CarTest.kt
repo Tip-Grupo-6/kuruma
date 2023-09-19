@@ -6,19 +6,20 @@ import java.time.LocalDate
 class CarTest {
     @org.junit.jupiter.api.Test
     fun testCar() {
-        val car = Car()
-        car.brand = "Peugeot"
-        car.model = "208"
-        car.year = 2023
-        car.color = "Black"
-        car.image = "peugeot_208.jpg"
-
         val carItem = CarItem()
         carItem.name = "Oil"
         carItem.last_change = LocalDate.now()
         carItem.next_change_due = LocalDate.now().plusMonths(6)
         carItem.due_status = false
-        car.carItems = listOf(carItem)
+
+        val car = Car(
+            brand = "Peugeot",
+            model = "208",
+            year = 2023,
+            color = "Black",
+            image = "peugeot_208.jpg",
+            carItems = listOf(carItem)
+        )
 
         // car
         assertEquals("Peugeot", car.brand)

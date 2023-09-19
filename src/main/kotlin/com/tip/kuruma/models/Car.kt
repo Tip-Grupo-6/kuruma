@@ -10,14 +10,13 @@ data class Car(
     val id: Long? = null,
     val brand: String? = null,
     val model: String? = null,
+    @Column(name = "`year`")
     val year: Int? = null,
     val color: String? = null,
     val image: String? = null,
     val isDeleted: Boolean? = false,
-    @OneToMany(mappedBy = "car_id", fetch = FetchType.LAZY)
-    val carItems: List<CarItem>? = null,
-    @OneToMany(mappedBy = "car", cascade = [CascadeType.ALL], orphanRemoval = true,  fetch = FetchType.EAGER)
-    val notifications: MutableList<Notification> = mutableListOf()  // Use MutableList instead of List
+    @OneToMany(mappedBy = "car_id", fetch = FetchType.EAGER)
+    val carItems: List<CarItem>? = null
 ) {
 
     fun getName(): String {

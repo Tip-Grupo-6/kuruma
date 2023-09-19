@@ -8,20 +8,13 @@ class CarItemTest{
     @Test
     fun carItem() {
         val carItem = CarItem(
-            car = Car(
-                brand = "Toyota",
-                model = "Corolla",
-                year = 2015,
-                color = "Red",
-                image = "toyota_corolla.jpg"
-            ),
+            car_id = 1L,
             isDeleted = false,
             name = "Oil",
             last_change = LocalDate.now().minusMonths(9),
             next_change_due = LocalDate.now().minusMonths(9),
             due_status = false
         )
-        assertEquals("Toyota", carItem.car?.brand)
         assertEquals(false, carItem.isDeleted)
         assertEquals("Oil", carItem.name)
         assertEquals(LocalDate.now().minusMonths(9), carItem.last_change)
