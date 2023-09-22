@@ -22,11 +22,6 @@ class CarControllerTest {
     @Autowired
     private val carController: CarController? = null
 
-//    @BeforeAll
-//    fun setup() {
-//
-//    }
-
 
     @Test
     fun getAllCars() {
@@ -36,7 +31,7 @@ class CarControllerTest {
         // get all cars
         val cars = carController?.getAllCars()
         // assert that the list of cars is not empty
-        println(cars?.body)
+
         assert(cars?.body?.isNotEmpty() == true)
     }
 
