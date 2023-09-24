@@ -29,7 +29,7 @@ class CarItemServiceTest {
     @Transactional
     @Rollback(true)
     fun getAllCarItems() {
-        val carItem = createAndSaveAnyCarItem()
+        createAndSaveAnyCarItem()
 
         val carItems = carItemService?.getAllCarItems()
 
@@ -60,9 +60,12 @@ class CarItemServiceTest {
         val carItem =  createAndSaveAnyCarItem()
 
         // get car by id
-        val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
+        carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert carItem info
+        assert(carItem.name == "Oil Change")
+        assert(carItem.replacement_frequency == 30)
+        assert(carItem.due_status == false)
 
     }
 
@@ -87,7 +90,7 @@ class CarItemServiceTest {
     @Transactional
     @Rollback(true)
     fun deleteAllCarItems() {
-        val carItem =  createAndSaveAnyCarItem()
+        createAndSaveAnyCarItem()
 
         // delete all carItems
         carItemService?.deleteAllCarItems()

@@ -103,7 +103,7 @@ class CarControllerTest {
         // update car using carController.updateCar
         carController?.updateCar(carSaved.id!!, dto)
 
-        var updatedCar = carService?.getCarById(carSaved.id!!)
+        val updatedCar = carService?.getCarById(carSaved.id!!)
 
         // assert updateCar new values
         assert(updatedCar?.brand == "Another brand")
@@ -125,9 +125,6 @@ class CarControllerTest {
 
         // Check if the response is not null and has an OK status
         assert(responseEntity.statusCode == HttpStatus.NO_CONTENT)
-        // Check car deleted message
-//        val responseBody = responseEntity.body as Map<*, *>
-//        assert(responseBody["message"] == "Ford Focus deleted")
 
         // Check if the car saved with is deleted
         val car = carService?.getCarById(carSaved.id!!)
