@@ -20,8 +20,8 @@ class NotificationController @Autowired constructor(
     }
 
     @PostMapping
-    fun createNotification(@RequestBody notification: Notification): ResponseEntity<NotificationDTO> {
-        val savedNotification = notificationService.saveNotification(notification)
+    fun createNotification(@RequestBody notificationDTO: NotificationDTO): ResponseEntity<NotificationDTO> {
+        val savedNotification = notificationService.saveNotification(notificationDTO.toNotification())
         return ResponseEntity.status(201).body(NotificationDTO.fromNotification(savedNotification))
     }
 
@@ -32,8 +32,8 @@ class NotificationController @Autowired constructor(
     }
 
     @PutMapping("/{id}")
-    fun updateNotification(@PathVariable id: Long,@RequestBody notificationUpdate: Notification ): ResponseEntity<NotificationDTO> {
-        val notification = notificationService.updateNotification(id, notificationUpdate)
+    fun updateNotification(@PathVariable id: Long,@RequestBody notificationDTO: NotificationDTO ): ResponseEntity<NotificationDTO> {
+        val notification = notificationService.updateNotification(id, notificationDTO.toNotification())
         return ResponseEntity.ok(NotificationDTO.fromNotification(notification))
     }
 

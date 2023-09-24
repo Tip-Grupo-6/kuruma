@@ -24,6 +24,14 @@ data class NotificationDTO(
         fun fromNotifications(notifications: List<Notification>): List<NotificationDTO> {
             return notifications.map { fromNotification(it) }
         }
+
+    }
+
+    fun toNotification(): Notification {
+        return Notification(
+            car = this.car?.toCar(),
+            isDeleted = this.is_deleted
+        )
     }
 
     private fun generateMaintenanceMessages(carItems: List<CarItemDTO>?): Map<String, String> {
@@ -39,7 +47,7 @@ data class NotificationDTO(
     fun maintenanceMessage(carItem: CarItemDTO): String {
         val carItemName = carItem.name
         var adviceMessage: String = "$carItemName is up to date";
-        val ChangeDueDate = carItem.next_change_due as LocalDate?
+        val ChangeDueDate = carItem.next_change_due
         val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), ChangeDueDate)
         if (daysUntilDue in 0..30) {
             adviceMessage = "Change $carItemName within $daysUntilDue days"

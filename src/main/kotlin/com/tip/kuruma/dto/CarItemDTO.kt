@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class CarItemDTO(
     var id: Long? = null,
+    var car_id: Long? = null,
     var name: String? = null,
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
@@ -16,6 +17,7 @@ data class CarItemDTO(
         fun fromCarItem(carItem: CarItem): CarItemDTO {
             val carItemDTO = CarItemDTO(
                 id = carItem.id,
+                car_id = carItem.car_id,
                 name = carItem.name,
                 is_deleted = carItem.isDeleted,
                 last_change = carItem.last_change,
@@ -35,7 +37,12 @@ data class CarItemDTO(
     fun toCarItem(): CarItem {
         return CarItem(
                 name= this.name,
-                last_change = this.last_change!!
+                car_id = this.id,
+                last_change = this.last_change ?: LocalDate.now(),
+                replacement_frequency = this.replacement_frequency,
+                isDeleted = this.is_deleted,
+                due_status = this.due_status,
+                next_change_due = this.next_change_due
         )
     }
 }

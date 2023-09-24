@@ -5,13 +5,16 @@ jobs:
     docker:
       - image: openjdk:17-jdk-slim
     steps:
-      - checkout  # Checkout your code from the repository
+      - checkout
       - run:
           name: Check Java Version
           command: java -version
       - run:
           name: Model tests
           command: ./gradlew test --tests "com.tip.kuruma.models.*"
+      - run:
+            name: Service tests
+            command: ./gradlew test --tests "com.tip.kuruma.services.*"
       - run:
             name: Controller tests
             command: ./gradlew test --tests "com.tip.kuruma.controllers.*"
