@@ -52,4 +52,6 @@ class CarItemService(
        LOGGER.info("Car Item with id $id has been deleted")
     }
 
+    fun deleteAllCarItems() = carItemRepository.deleteAll()
+
 }
