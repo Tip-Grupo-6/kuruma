@@ -4,6 +4,8 @@ import com.tip.kuruma.models.Car
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.Rollback
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 class CarServiceTest {
@@ -23,6 +25,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun getAllCars() {
         val car = createAndSaveAnyCar()
         carService?.saveCar(car)
@@ -37,6 +41,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun saveCar() {
         val car = createAndSaveAnyCar()
 
@@ -47,6 +53,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun getCarById() {
         val car = createAndSaveAnyCar()
 
@@ -60,6 +68,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun deleteCar() {
         val car = createAndSaveAnyCar()
 
@@ -75,6 +85,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun deleteAllCars() {
         val car = createAndSaveAnyCar()
         carService?.saveCar(car)
@@ -90,6 +102,8 @@ class CarServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun updateCar() {
         val car = createAndSaveAnyCar()
 

@@ -24,6 +24,8 @@ class CarControllerTest {
 
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun getAllCars() {
         val car = createAnyCar()
         carController?.createCar(CarDTO.fromCar(car))

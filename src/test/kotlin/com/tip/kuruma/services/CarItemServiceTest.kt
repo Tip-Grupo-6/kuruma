@@ -4,6 +4,8 @@ import com.tip.kuruma.models.CarItem
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.Rollback
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @SpringBootTest
@@ -18,14 +20,16 @@ class CarItemServiceTest {
         due_status = false
     )
 
-    private fun createAndSaveAnyCar(): CarItem {
+    private fun createAndSaveAnyCarItem(): CarItem {
         val carItem = createAnyCarItem()
         return carItemService?.saveCarItem(carItem)!!
     }
 
     @Test
-    fun getAllCars() {
-        val carItem = createAndSaveAnyCar()
+    @Transactional
+    @Rollback(true)
+    fun getAllCarItems() {
+        val carItem = createAndSaveAnyCarItem()
 
         val carItems = carItemService?.getAllCarItems()
 
@@ -38,8 +42,10 @@ class CarItemServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun saveCarItem() {
-        val carItem =  createAndSaveAnyCar()
+        val carItem =  createAndSaveAnyCarItem()
 
         // assert car info
         assert(carItem.name == "Oil Change")
@@ -48,8 +54,10 @@ class CarItemServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     fun getCarById() {
-        val carItem =  createAndSaveAnyCar()
+        val carItem =  createAndSaveAnyCarItem()
 
         // get car by id
         val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
@@ -59,37 +67,43 @@ class CarItemServiceTest {
     }
 
     @Test
-    fun deleteCar() {
-        val carItem =  createAndSaveAnyCar()
+    @Transactional
+    @Rollback(true)
+    fun deleteCarItem() {
+        val carItem =  createAndSaveAnyCarItem()
 
-        // delete car by id
+        // delete carItem by id
         carItem.id?.let { carItemService?.deleteCarItem(it) }
 
-        // get car by id
+        // get carItem by id
         val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
 
-        // assert car info
+        // assert carItem info
         assert(carById?.isDeleted == true)
 
     }
 
     @Test
-    fun deleteAllCars() {
-        val carItem =  createAndSaveAnyCar()
+    @Transactional
+    @Rollback(true)
+    fun deleteAllCarItems() {
+        val carItem =  createAndSaveAnyCarItem()
 
-        // delete all cars
+        // delete all carItems
         carItemService?.deleteAllCarItems()
 
-        // get all cars
-        val cars = carItemService?.getAllCarItems()
+        // get all carItems
+        val carItems = carItemService?.getAllCarItems()
 
-        // assert car info
-        assert(cars?.isEmpty() == true)
+        // assert carItem info
+        assert(carItems?.isEmpty() == true)
     }
 
     @Test
-    fun updateCar() {
-        val carItem =  createAndSaveAnyCar()
+    @Transactional
+    @Rollback(true)
+    fun updateCarItem() {
+        val carItem =  createAndSaveAnyCarItem()
 
         // update carItem
         val updateCarItem = carItem.copy(
@@ -99,10 +113,10 @@ class CarItemServiceTest {
             due_status = false
         )
 
-        // update car using carItemService.updateCar
+        // update carItem using carItemService.updateCar
         updateCarItem.id?.let { carItemService?.updateCarItem(it, updateCarItem) }
 
-        // get car by id
+        // get carItem by id
         val carItemById = carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert updateCar new values
