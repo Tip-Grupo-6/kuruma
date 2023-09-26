@@ -4,6 +4,7 @@ import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
+import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.services.CarService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -51,7 +52,7 @@ class CarControllerTest {
     assert(createdCar?.body?.year == 2023)
     assert(createdCar?.body?.color == "white")
     assert(createdCar?.body?.maintenance_values?.size == 1)
-    assert(createdCar?.body?.maintenance_values?.get(0)?.name == "Oil Change")
+//    assert(createdCar?.body?.maintenance_values?.get(0)?.name == "Oil Change")
 
     }
 
@@ -143,7 +144,7 @@ class CarControllerTest {
             color = "white",
             carItems = listOf(
                     CarItem(
-                            name = "Oil Change"
+                            maintenanceItem = MaintenanceItem(code = "OIL", description = "Oil change")
                     )
             )
     )

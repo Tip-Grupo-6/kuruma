@@ -15,13 +15,13 @@ class RestControllerAdvice {
 
     @ExceptionHandler(EntityNotFoundException::class)
     fun handleEntityNotFoundException(ex: EntityNotFoundException): ResponseEntity<Any> {
-        LOGGER.info(ex.message)
+        LOGGER.info("Entity not found exception was throw: ${ex.message}")
         return ResponseEntity.notFound().build()
     }
 
     @ExceptionHandler(RuntimeException::class)
     fun handleUnexpectedException(ex: RuntimeException): ResponseEntity<Any> {
-        LOGGER.info(ex.message)
+        LOGGER.info("Unexpected exception was throw: ${ex.message}")
         return ResponseEntity.internalServerError().build()
     }
 }

@@ -2,17 +2,19 @@ package com.tip.kuruma.services
 
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.models.Car
+import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.repositories.CarRepository
+import com.tip.kuruma.repositories.MaintenanceItemRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrElse
 
 @Service
 class CarService @Autowired constructor(
         private val carRepository: CarRepository,
-        private val carItemService: CarItemService
+        private val carItemService: CarItemService,
+        private val maintenanceService: MaintenanceService
 ) {
 
     companion object {
@@ -28,8 +30,9 @@ class CarService @Autowired constructor(
     fun saveCar(car: Car): Car {
         LOGGER.info("Saving car $car")
         val savedCar = carRepository.save(car)
-        savedCar.carItems?.forEach {
-            carItemService.saveCarItem(it.copy(car_id = savedCar.id))
+        savedCar.carItems?.map {
+            val maintenanceItem = maintenanceService.findByCode(it.maintenanceItem?.code!!)
+            carItemService.saveCarItem(it.copy(car_id = savedCar.id, maintenanceItem = maintenanceItem))
         }
         return savedCar
     }

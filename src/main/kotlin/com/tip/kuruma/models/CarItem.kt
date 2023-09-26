@@ -10,14 +10,13 @@ data class CarItem(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     var car_id: Long? = null,
-    var isDeleted: Boolean? = false,
-    var name: String? = null,
+    @OneToOne
+    @JoinColumn(referencedColumnName = "id")
+    val maintenanceItem: MaintenanceItem? = null,
     var last_change: LocalDate = LocalDate.now(),
-    var next_change_due: LocalDate? = null,
-    var replacement_frequency: Int = 0,
-    var due_status: Boolean? = false){
+    var isDeleted: Boolean? = false){
 
     override fun toString(): String {
-        return "CarItem(id=$id, name=$name, last_change=$last_change, next_change_due=$next_change_due, replacement_frequency=$replacement_frequency, due_status=$due_status)"
+        return "CarItem(id=$id, card_id=$car_id, last_change=$last_change, maintenance_item_id=$maintenanceItem)"
     }
 }

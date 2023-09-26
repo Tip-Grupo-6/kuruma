@@ -7,17 +7,30 @@ CREATE TABLE IF NOT EXISTS car(
     `year` INTEGER,
     color varchar(20),
     image varchar(256),
+    kilometers varchar(256),
     is_deleted boolean
+);
+
+CREATE TABLE IF NOT EXISTS maintenance_item(
+     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+     code varchar(30) NOT NULL,
+     description varchar(256) NOT NULL,
+     replacement_frequency INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS car_item(
      id INTEGER PRIMARY KEY AUTO_INCREMENT,
      car_id INTEGER,
-     name varchar(100),
+     maintenance_item_id INT NOT NULL,
      last_change date,
-     next_change_due date,
-     replacement_frequency INTEGER,
-     due_status boolean,
      is_deleted boolean,
-     FOREIGN KEY(car_id) REFERENCES car(id)
+     FOREIGN KEY(car_id) REFERENCES car(id),
+     FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
+
+
+-------------------------- INSERTS --------------------------
+
+INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('OIL', 'Aceite', 6);
+INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('WATER', 'Agua', 3);
+INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('TIRE_PRESSURE', 'Presión de neumáticos', 2);

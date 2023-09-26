@@ -14,6 +14,7 @@ data class Car(
     val year: Int? = null,
     val color: String? = null,
     val image: String? = null,
+    val kilometers: String? = null,
     val isDeleted: Boolean? = false,
     @OneToMany(mappedBy = "car_id", fetch = FetchType.EAGER)
     val carItems: List<CarItem>? = null

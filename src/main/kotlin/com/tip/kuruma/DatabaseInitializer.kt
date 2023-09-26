@@ -7,6 +7,8 @@ import com.tip.kuruma.services.NotificationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 
 //@Component
 class DatabaseInitializate : CommandLineRunner {
@@ -18,7 +20,7 @@ class DatabaseInitializate : CommandLineRunner {
 	lateinit var carItemService: CarItemService
 
     override fun run(vararg args: String?) {
-
+/*
 		// Create some cars
 		val car1 = Car(
 			brand = "Toyota",
@@ -150,6 +152,6 @@ class DatabaseInitializate : CommandLineRunner {
 		notificationService.saveNotification(notification1)
 		notificationService.saveNotification(notification2)
 		notificationService.saveNotification(notification3)
-
+*/
     }
 }

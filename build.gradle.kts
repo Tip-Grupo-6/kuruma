@@ -23,8 +23,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.postgresql:postgresql")
@@ -33,6 +34,8 @@ dependencies {
 	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("com.h2database:h2")
+	testImplementation("io.quarkus:quarkus-junit5-mockito:2.12.2.Final")
+	testImplementation("io.mockk:mockk:1.12.4")
 }
 
 tasks.withType<KotlinCompile> {

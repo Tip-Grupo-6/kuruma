@@ -9,21 +9,27 @@ create table car(
     year int,
     color varchar(20),
     image varchar(256),
+    kilometers varchar(256),
     is_deleted boolean,
     PRIMARY KEY(id)
 );
 
+create table maintenance_item(
+     id INT GENERATED ALWAYS AS IDENTITY,
+     code varchar(30) NOT NULL,
+     description varchar(256) NOT NULL,
+     replacement_frequency INT NOT NULL,
+     PRIMARY KEY(id),
+     UNIQUE (code)
+);
+
 create table car_item(
     id INT GENERATED ALWAYS AS IDENTITY,
-    car_id int,
-    name varchar(100),
+    car_id INT NOT NULL,
+    maintenance_item_id INT NOT NULL,
     last_change date,
-    next_change_due date,
-    replacement_frequency int,
-    due_status boolean,
     is_deleted boolean,
     PRIMARY KEY(id),
-    CONSTRAINT fk_customer
-        FOREIGN KEY(car_id)
-            REFERENCES car(id)
-)
+    CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id),
+    CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
+);
