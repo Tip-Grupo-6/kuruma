@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class CarItemService(
-    private val carItemRepository: CarItemRepository
+    private val carItemRepository: CarItemRepository,
+    private val maintenanceService: MaintenanceService
 ) {
 
     companion object {
@@ -22,7 +23,8 @@ class CarItemService(
 
     fun saveCarItem(carItem: CarItem): CarItem {
         LOGGER.info("Saving car item $carItem")
-        return carItemRepository.save(carItem)
+        val maintenanceItem = maintenanceService.findByCode(carItem.maintenanceItem?.code!!)
+        return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem))
     }
 
     fun getCarItemById(id: Long): CarItem? {
@@ -33,12 +35,7 @@ class CarItemService(
     fun updateCarItem(id: Long, carItem: CarItem): CarItem {
         val carItemToUpdate = carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
         carItemToUpdate?.let {
-            it.name = carItem.name
             it.last_change = carItem.last_change
-            it.next_change_due = carItem.next_change_due
-            it.replacement_frequency = carItem.replacement_frequency
-            it.due_status = carItem.due_status
-
             return carItemRepository.save(it)
         }
        LOGGER.info("Car Item with id $id has been updated")

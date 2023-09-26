@@ -8,6 +8,7 @@ data class CarDTO(
     var model: String? = null,
     var year: Int? = null,
     var color: String? = null,
+    var kilometers: String? = null,
     var image: String? = null,
     var is_deleted: Boolean? = false,
     val maintenance_values: List<CarItemDTO>? = null,
@@ -23,6 +24,7 @@ data class CarDTO(
                 year = car.year,
                 color = car.color,
                 image = car.image,
+                kilometers = car.kilometers,
                 is_deleted = car.isDeleted,
                 maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) }
             )
@@ -55,6 +57,7 @@ data class CarDTO(
             year = this.year,
             color = this.color,
             image = this.image,
+            kilometers = this.kilometers,
             carItems = this.maintenance_values?.map {
                 it.toCarItem()
             }

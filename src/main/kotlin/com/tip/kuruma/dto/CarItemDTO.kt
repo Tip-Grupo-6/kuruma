@@ -1,15 +1,16 @@
 package com.tip.kuruma.dto
 
 import com.tip.kuruma.models.CarItem
+import com.tip.kuruma.models.MaintenanceItem
 import java.time.LocalDate
 
 data class CarItemDTO(
     var id: Long? = null,
     var car_id: Long? = null,
-    var name: String? = null,
+    val code: String? = null,
+    val name: String? = null,
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
-    var replacement_frequency: Int = 0,
     var due_status: Boolean = false,
     var is_deleted: Boolean? = false
 ) {
@@ -18,14 +19,16 @@ data class CarItemDTO(
             val carItemDTO = CarItemDTO(
                 id = carItem.id,
                 car_id = carItem.car_id,
-                name = carItem.name,
+                code = carItem.maintenanceItem?.code,
+                name = carItem.maintenanceItem?.description,
                 is_deleted = carItem.isDeleted,
-                last_change = carItem.last_change,
-                replacement_frequency = carItem.replacement_frequency
+                last_change = carItem.last_change
             )
-            carItemDTO.next_change_due = carItem.last_change.plusMonths(carItemDTO.replacement_frequency.toLong())
-            carItemDTO.due_status = carItemDTO.next_change_due?.isBefore(LocalDate.now()) ?: false
-
+            carItem.maintenanceItem?.replacementFrequency?.let {
+                val nextChangeDue = carItem.last_change.plusMonths(it.toLong())
+                carItemDTO.next_change_due = nextChangeDue
+                carItemDTO.due_status = nextChangeDue.isBefore(LocalDate.now())
+            }
             return  carItemDTO
         }
 
@@ -36,13 +39,10 @@ data class CarItemDTO(
 
     fun toCarItem(): CarItem {
         return CarItem(
-                name= this.name,
                 car_id = this.id,
+                maintenanceItem = MaintenanceItem(code = this.code),
                 last_change = this.last_change ?: LocalDate.now(),
-                replacement_frequency = this.replacement_frequency,
-                isDeleted = this.is_deleted,
-                due_status = this.due_status,
-                next_change_due = this.next_change_due
+                isDeleted = this.is_deleted
         )
     }
 }

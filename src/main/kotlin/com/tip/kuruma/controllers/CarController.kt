@@ -15,7 +15,7 @@ class CarController @Autowired constructor(
 ) {
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(CarService::class.java)
+        private val LOGGER = LoggerFactory.getLogger(CarController::class.java)
     }
 
     @GetMapping

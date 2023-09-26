@@ -1,6 +1,8 @@
 package com.tip.kuruma.services
 
 import com.tip.kuruma.models.CarItem
+import com.tip.kuruma.models.MaintenanceItem
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,10 +16,13 @@ class CarItemServiceTest {
     private val carItemService: CarItemService? = null
 
     private fun createAnyCarItem(): CarItem = CarItem(
-        name = "Oil Change",
         last_change = LocalDate.now(),
-        replacement_frequency = 30,
-        due_status = false
+        maintenanceItem = MaintenanceItem(
+            id = 1,
+            code = "OIL",
+            description = "Oil change",
+            replacementFrequency = 30
+        )
     )
 
     private fun createAndSaveAnyCarItem(): CarItem {
@@ -34,11 +39,7 @@ class CarItemServiceTest {
         val carItems = carItemService?.getAllCarItems()
 
         // assert car info
-        assert(carItems?.isNotEmpty() == true)
-        assert(carItems?.get(0)?.name == "Oil Change")
-        assert(carItems?.get(0)?.replacement_frequency == 30)
-        assert(carItems?.get(0)?.due_status == false)
-
+        assertTrue(carItems?.isNotEmpty()!!)
     }
 
     @Test
@@ -48,9 +49,7 @@ class CarItemServiceTest {
         val carItem =  createAndSaveAnyCarItem()
 
         // assert car info
-        assert(carItem.name == "Oil Change")
-        assert(carItem.replacement_frequency == 30)
-        assert(carItem.due_status == false)
+        assertNotNull(carItem)
     }
 
     @Test
@@ -63,9 +62,7 @@ class CarItemServiceTest {
         carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert carItem info
-        assert(carItem.name == "Oil Change")
-        assert(carItem.replacement_frequency == 30)
-        assert(carItem.due_status == false)
+        assertNotNull(carItem)
 
     }
 
@@ -82,7 +79,7 @@ class CarItemServiceTest {
         val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert carItem info
-        assert(carById?.isDeleted == true)
+        assertTrue(carById?.isDeleted!!)
 
     }
 
@@ -99,7 +96,7 @@ class CarItemServiceTest {
         val carItems = carItemService?.getAllCarItems()
 
         // assert carItem info
-        assert(carItems?.isEmpty() == true)
+        assertTrue(carItems?.isEmpty()!!)
     }
 
     @Test
@@ -110,10 +107,7 @@ class CarItemServiceTest {
 
         // update carItem
         val updateCarItem = carItem.copy(
-            name = "Another name",
             last_change = LocalDate.now().plusMonths(1),
-            replacement_frequency = 7,
-            due_status = false
         )
 
         // update carItem using carItemService.updateCar
@@ -123,10 +117,6 @@ class CarItemServiceTest {
         val carItemById = carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert updateCar new values
-        assert(carItemById?.name == "Another name")
-        assert(carItemById?.last_change == LocalDate.now().plusMonths(1))
-        assert(carItemById?.replacement_frequency == 7)
-        assert(carItemById?.due_status == false)
-
+        assertEquals(LocalDate.now().plusMonths(1), carItemById?.last_change)
     }
 }

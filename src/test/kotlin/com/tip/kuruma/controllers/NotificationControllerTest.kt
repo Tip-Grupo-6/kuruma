@@ -4,6 +4,7 @@ import com.tip.kuruma.dto.CarItemDTO
 import com.tip.kuruma.dto.NotificationDTO
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
+import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.models.Notification
 import com.tip.kuruma.services.CarService
 import com.tip.kuruma.services.NotificationService
@@ -66,7 +67,9 @@ class NotificationControllerTest {
         color = "white",
         carItems = listOf(
             CarItem(
-                name = "Oil Change"
+                    maintenanceItem = MaintenanceItem(
+                            description = "Oil Change"
+                    )
             )
         )
     )

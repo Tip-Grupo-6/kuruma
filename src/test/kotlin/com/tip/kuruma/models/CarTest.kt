@@ -7,10 +7,7 @@ class CarTest {
     @org.junit.jupiter.api.Test
     fun testCar() {
         val carItem = CarItem()
-        carItem.name = "Oil"
         carItem.last_change = LocalDate.now()
-        carItem.next_change_due = LocalDate.now().plusMonths(6)
-        carItem.due_status = false
 
         val car = Car(
             brand = "Peugeot",
@@ -31,9 +28,6 @@ class CarTest {
         assertEquals("Peugeot 208", car.getName())
 
         // car items
-        assertEquals("Oil", car.carItems?.get(0)?.name)
         assertEquals(LocalDate.now(), car.carItems?.get(0)?.last_change)
-        assertEquals(LocalDate.now().plusMonths(6), car.carItems?.get(0)?.next_change_due)
-        assertEquals(false, car.carItems?.get(0)?.due_status)
     }
 }
