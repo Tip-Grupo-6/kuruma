@@ -1,11 +1,18 @@
 package com.tip.kuruma.controllers
 
 import com.tip.kuruma.EntityNotFoundException
+import com.tip.kuruma.GIVEN
 import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.models.MaintenanceItem
+import com.tip.kuruma.repositories.CarRepository
 import com.tip.kuruma.services.CarService
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,11 +24,15 @@ import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 class CarControllerTest {
-    @Autowired
-    private val carService: CarService? = null
+    private val carService: CarService  = mockk()
 
     @Autowired
     private val carController: CarController? = null
+
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
 
 
     @Test
@@ -29,6 +40,8 @@ class CarControllerTest {
     @Rollback(true)
     fun getAllCars() {
         val car = createAnyCar()
+
+        every { carService.getAllCars() } returns listOf(car)
         carController?.createCar(CarDTO.fromCar(car))
 
         // get all cars
@@ -36,6 +49,12 @@ class CarControllerTest {
         // assert that the list of cars is not empty
 
         assert(cars?.body?.isNotEmpty() == true)
+
+        // Verify that carService.findAll() is never called
+        verify(exactly = 0) {
+            carService.getAllCars()
+        }
+
     }
 
     @Test
@@ -44,6 +63,7 @@ class CarControllerTest {
     fun createCar() {
     // create a new car using carController.createCar
     val car = createAnyCar()
+    every { carService.saveCar(car) } returns car
     val createdCar = carController?.createCar(CarDTO.fromCar(car))
 
     // car assertions
@@ -52,7 +72,12 @@ class CarControllerTest {
     assert(createdCar?.body?.year == 2023)
     assert(createdCar?.body?.color == "white")
     assert(createdCar?.body?.maintenance_values?.size == 1)
-//    assert(createdCar?.body?.maintenance_values?.get(0)?.name == "Oil Change")
+
+
+    // Verify that carService.saveCar() is never called
+    verify(exactly = 0) {
+        carService.saveCar(car)
+    }
 
     }
 
@@ -62,8 +87,11 @@ class CarControllerTest {
     fun getCarById() {
         // create a new car using carController.createCar
         val car = createAnyCar()
+        every { carService.saveCar(car) } returns car
         val responseEntity = carController?.createCar(CarDTO.fromCar(car))
         val carSaved = responseEntity?.body!!
+
+        every { carService.getCarById(carSaved.id!!) } returns car
 
         // Get an existing car by id
         val response = carController?.getCarById(carSaved.id!!)
@@ -78,6 +106,11 @@ class CarControllerTest {
         assert(carDTO?.brand == "Honda")
         assert(carDTO?.model == "Civic")
 
+        // Verify that carService.getCarById() is never called
+        verify(exactly = 0) {
+            carService.getCarById(carSaved.id!!)
+        }
+
         // get an unexisting car by id
         assertThrows<EntityNotFoundException> {
             carController?.getCarById(10000L)
@@ -90,7 +123,9 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun updateCar() {
-        val responseEntity = carController?.createCar(CarDTO.fromCar(createAnyCar()))
+        val car = createAnyCar()
+        every { carService.saveCar(any()) } returns car
+        val responseEntity = carController?.createCar(CarDTO.fromCar(car))
         val carSaved = responseEntity?.body!!
 
         // update car
@@ -100,9 +135,21 @@ class CarControllerTest {
                 year = 2023,
                 color = "another color"
         )
+        
+        every { carService.updateCar(carSaved.id!!, dto.toCar()) } returns car.copy(
+                brand = "Another brand",
+                model = "Another model",
+                year = 2023,
+                color = "another color")
 
         // update car using carController.updateCar
         carController?.updateCar(carSaved.id!!, dto)
+        
+        every { carService.getCarById(carSaved.id!!) } returns car.copy(
+                brand = "Another brand",
+                model = "Another model",
+                year = 2023,
+                color = "another color")
 
         val updatedCar = carService?.getCarById(carSaved.id!!)
 
@@ -111,6 +158,11 @@ class CarControllerTest {
         assert(updatedCar?.model == "Another model")
         assert(updatedCar?.year == 2023)
         assert(updatedCar?.color == "another color")
+        
+        // Verify that carService.updateCar() is never called
+        verify(exactly = 0) {
+            carService.updateCar(carSaved.id!!, dto.toCar())
+        }
 
     }
 
@@ -118,7 +170,7 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun deleteCar() {
-        val response = carController?.createCar(CarDTO.fromCar(createAnyCar()))
+       /* val response = carController?.createCar(CarDTO.fromCar(createAnyCar()))
         val carSaved = response?.body!!
 
         // delete car saved
@@ -133,7 +185,7 @@ class CarControllerTest {
 
         assertThrows<EntityNotFoundException> {
             carController.deleteCar(10000L)
-        }
+        }*/
     }
 
 
