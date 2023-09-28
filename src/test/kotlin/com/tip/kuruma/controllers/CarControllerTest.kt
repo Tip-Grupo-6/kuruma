@@ -1,12 +1,8 @@
 package com.tip.kuruma.controllers
 
 import com.tip.kuruma.EntityNotFoundException
-import com.tip.kuruma.GIVEN
+import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.dto.CarDTO
-import com.tip.kuruma.models.Car
-import com.tip.kuruma.models.CarItem
-import com.tip.kuruma.models.MaintenanceItem
-import com.tip.kuruma.repositories.CarRepository
 import com.tip.kuruma.services.CarService
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -18,7 +14,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,14 +34,12 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun getAllCars() {
-        val car = createAnyCar()
+        val car = CarBuilder().build()
 
         every { carService.getAllCars() } returns listOf(car)
         carController?.createCar(CarDTO.fromCar(car))
 
-        // get all cars
         val cars = carController?.getAllCars()
-        // assert that the list of cars is not empty
 
         assert(cars?.body?.isNotEmpty() == true)
 
@@ -62,7 +55,7 @@ class CarControllerTest {
     @Rollback(true)
     fun createCar() {
     // create a new car using carController.createCar
-    val car = createAnyCar()
+    val car = CarBuilder().build()
     every { carService.saveCar(car) } returns car
     val createdCar = carController?.createCar(CarDTO.fromCar(car))
 
@@ -86,7 +79,7 @@ class CarControllerTest {
     @Rollback(true)
     fun getCarById() {
         // create a new car using carController.createCar
-        val car = createAnyCar()
+        val car = CarBuilder().build()
         every { carService.saveCar(car) } returns car
         val responseEntity = carController?.createCar(CarDTO.fromCar(car))
         val carSaved = responseEntity?.body!!
@@ -123,7 +116,7 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun updateCar() {
-        val car = createAnyCar()
+        val car = CarBuilder().build()
         every { carService.saveCar(any()) } returns car
         val responseEntity = carController?.createCar(CarDTO.fromCar(car))
         val carSaved = responseEntity?.body!!
@@ -170,7 +163,7 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun deleteCar() {
-       /* val response = carController?.createCar(CarDTO.fromCar(createAnyCar()))
+       /* val response = carController?.createCar(CarDTO.fromCar(CarBuilder().build()))
         val carSaved = response?.body!!
 
         // delete car saved
@@ -187,17 +180,4 @@ class CarControllerTest {
             carController.deleteCar(10000L)
         }*/
     }
-
-
-    private fun createAnyCar(): Car = Car(
-            brand = "Honda",
-            model = "Civic",
-            year = 2023,
-            color = "white",
-            carItems = listOf(
-                    CarItem(
-                            maintenanceItem = MaintenanceItem(code = "OIL", description = "Oil change")
-                    )
-            )
-    )
 }
