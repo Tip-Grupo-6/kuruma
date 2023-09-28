@@ -11,11 +11,7 @@ class CarBuilder {
     private var year: Int = 2023
     private var color: String = "white"
     private var isDeleted: Boolean = false
-    private var carItems = listOf(
-        CarItem(
-            maintenanceItem = MaintenanceItem(code = "OIL", description = "Oil change")
-        )
-    )
+    private var carItems = listOf(CarItemBuilder().build())
 
     fun withBrand(brand: String): CarBuilder {
         this.brand = brand
