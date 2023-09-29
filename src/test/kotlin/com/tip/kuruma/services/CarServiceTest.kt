@@ -27,7 +27,10 @@ class CarServiceTest {
     }
 
     private fun builtCar(): Car {
-        return CarBuilder().withCarItems(listOf()).build()
+        var  car = CarBuilder().withCarItems(listOf()).build()
+        every { carRepository.save(car) } returns car
+        carService?.saveCar(car)
+        return car
     }
 
     @Test
@@ -35,10 +38,8 @@ class CarServiceTest {
     @Rollback(true)
     fun getAllCars() {
         val car = builtCar()
-        every { carRepository.findAll() } returns listOf(car)
-        every { carRepository.save(car) } returns car
 
-        carService?.saveCar(car)
+        every { carRepository.findAll() } returns listOf(car)
 
         val cars = carService?.getAllCars()
 
@@ -58,14 +59,16 @@ class CarServiceTest {
     @Transactional
     @Rollback(true)
     fun saveCar() {
-        val car = builtCar()
+        val car = CarBuilder().withBrand("Peugeot").withModel("208").withColor("Black").build()
         every { carRepository.save(car) } returns car
-        carService?.saveCar(car)
+
+        // save car using carService.saveCar
+        val createdCar = carService?.saveCar(car)
 
         // assert car info
-        assert(car.brand == "Honda")
-        assert(car.model == "Civic")
-        assert(car.color == "white")
+        assert(createdCar?.brand == "Peugeot")
+        assert(createdCar?.model == "208")
+        assert(createdCar?.color == "Black")
 
         // verify that carRepository.save() is never called
         verify(exactly = 0) {
@@ -78,8 +81,13 @@ class CarServiceTest {
     @Rollback(true)
     fun getCarById() {
         val car = builtCar()
+<<<<<<< HEAD
         every { carRepository.save(car) } returns car
         carService?.saveCar(car)
+=======
+
+        every { carRepository.findById(car.id!!) } returns Optional.of(car)
+>>>>>>> 78b0dc1 (Adjust & Improve CarService test and make it DRY)
 
         // get car by id
         val carById = car.id?.let { carService?.getCarById(it) }
@@ -99,9 +107,7 @@ class CarServiceTest {
     @Transactional
     @Rollback(true)
     fun updateCar() {
-           var car = builtCar()
-           every { carRepository.save(car) } returns car
-           carService?.saveCar(car)
+           val car = builtCar()
 
             // update car
             val updatedCar = car.copy(
@@ -139,9 +145,6 @@ class CarServiceTest {
         val car = builtCar()
         every { carRepository.save(car) } returns car.copy(isDeleted = true)
 
-        carService?.saveCar(car)
-
-        // delete car by id
         car.id?.let { carService?.deleteCar(it) }
 
         // get car by id
@@ -161,18 +164,12 @@ class CarServiceTest {
     @Transactional
     @Rollback(true)
     fun deleteAllCars() {
-        val car = builtCar()
-        every { carRepository.save(car) } returns car.copy(isDeleted = true)
-        carService?.saveCar(car)
+        builtCar()
 
-        // delete all cars
         carService?.deleteAllCars()
 
-        every { carRepository.findAll() } returns listOf()
-        // get all cars
         val cars = carService?.getAllCars()
 
-        // assert car info
         assert(cars?.isEmpty() == true)
     }
 }

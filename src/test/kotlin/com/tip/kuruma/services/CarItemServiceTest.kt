@@ -47,7 +47,7 @@ class CarItemServiceTest {
         // assert car info
         assertTrue(carItems?.isNotEmpty()!!)
         assertEquals(6, carItems[0].maintenanceItem?.replacementFrequency)
-        assertEquals(LocalDate.now(), carItems[0].last_change)
+        assertEquals(LocalDate.now(), carItems[0].lastChange)
         assertEquals(false, carItems[0].isDeleted)
         assertEquals("OIL", carItems[0].maintenanceItem?.code)
 
@@ -68,7 +68,7 @@ class CarItemServiceTest {
         // assert car info
         assertNotNull(carItem)
         assertEquals(6, car?.maintenanceItem?.replacementFrequency)
-        assertEquals(LocalDate.now(), car?.last_change)
+        assertEquals(LocalDate.now(), car?.lastChange)
         assertEquals(false, car?.isDeleted)
         assertEquals("OIL", car?.maintenanceItem?.code)
 
@@ -92,7 +92,7 @@ class CarItemServiceTest {
         // assert carItem info
         assertNotNull(carItemByID)
         assertEquals(6, carItemByID?.maintenanceItem?.replacementFrequency)
-        assertEquals(LocalDate.now(), carItemByID?.last_change)
+        assertEquals(LocalDate.now(), carItemByID?.lastChange)
         assertEquals(false, carItemByID?.isDeleted)
         assertEquals("OIL", carItemByID?.maintenanceItem?.code)
 
