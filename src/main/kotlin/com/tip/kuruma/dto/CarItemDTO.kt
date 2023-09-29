@@ -18,14 +18,14 @@ data class CarItemDTO(
         fun fromCarItem(carItem: CarItem): CarItemDTO {
             val carItemDTO = CarItemDTO(
                 id = carItem.id,
-                car_id = carItem.car_id,
+                car_id = carItem.carId,
                 code = carItem.maintenanceItem?.code,
                 name = carItem.maintenanceItem?.description,
                 is_deleted = carItem.isDeleted,
-                last_change = carItem.last_change
+                last_change = carItem.lastChange
             )
             carItem.maintenanceItem?.replacementFrequency?.let {
-                val nextChangeDue = carItem.last_change.plusMonths(it.toLong())
+                val nextChangeDue = carItem.lastChange.plusMonths(it.toLong())
                 carItemDTO.next_change_due = nextChangeDue
                 carItemDTO.due_status = nextChangeDue.isBefore(LocalDate.now())
             }
@@ -39,9 +39,9 @@ data class CarItemDTO(
 
     fun toCarItem(): CarItem {
         return CarItem(
-                car_id = this.id,
+                carId = this.id,
                 maintenanceItem = MaintenanceItem(code = this.code),
-                last_change = this.last_change ?: LocalDate.now(),
+                lastChange = this.last_change ?: LocalDate.now(),
                 isDeleted = this.is_deleted
         )
     }

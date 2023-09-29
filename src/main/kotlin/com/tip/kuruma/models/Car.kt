@@ -1,6 +1,7 @@
 package com.tip.kuruma.models
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Where
 
 @Entity
 @Table(name = "car")
@@ -16,7 +17,8 @@ data class Car(
     val image: String? = null,
     val kilometers: String? = null,
     val isDeleted: Boolean? = false,
-    @OneToMany(mappedBy = "car_id", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "carId", fetch = FetchType.EAGER)
+    @Where(clause = "is_deleted = false")
     val carItems: List<CarItem>? = null
 ) {
 

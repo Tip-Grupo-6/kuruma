@@ -2,9 +2,7 @@ package com.tip.kuruma.services
 
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.models.Car
-import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.repositories.CarRepository
-import com.tip.kuruma.repositories.MaintenanceItemRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -30,11 +28,11 @@ class CarService @Autowired constructor(
     fun saveCar(car: Car): Car {
         LOGGER.info("Saving car $car")
         val savedCar = carRepository.save(car)
-        savedCar.carItems?.map {
+        val carItemSaved = savedCar.carItems?.map {
             val maintenanceItem = maintenanceService.findByCode(it.maintenanceItem?.code!!)
-            carItemService.saveCarItem(it.copy(car_id = savedCar.id, maintenanceItem = maintenanceItem))
+            carItemService.saveCarItem(it.copy(carId = savedCar.id, maintenanceItem = maintenanceItem))
         }
-        return savedCar
+        return savedCar.copy(carItems = carItemSaved)
     }
 
     fun getCarById(id: Long): Car {
@@ -52,6 +50,7 @@ class CarService @Autowired constructor(
 
     fun deleteAllCars() = carRepository.deleteAll()
 
+    @Transactional
     fun updateCar(id: Long, car: Car): Car {
         val existingCar = this.getCarById(id)
         val updatedCar = existingCar.copy(
@@ -61,8 +60,12 @@ class CarService @Autowired constructor(
                 color = car.color,
                 image = car.image
         )
-        return carRepository.save(updatedCar).also {
+        return carRepository.save(updatedCar).let { carUpdated ->
             LOGGER.info("Car with id $id has been updated")
+            val updateCarItems = car.carItems?.let {
+                carItemService.updateCarItems(id, it)
+            }
+            carUpdated.copy(carItems = updateCarItems)
         }
     }
 }
