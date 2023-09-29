@@ -16,7 +16,7 @@ class CarItemServiceTest {
     private val carItemService: CarItemService? = null
 
     private fun createAnyCarItem(): CarItem = CarItem(
-        last_change = LocalDate.now(),
+        lastChange = LocalDate.now(),
         maintenanceItem = MaintenanceItem(
             id = 1,
             code = "OIL",
@@ -107,7 +107,7 @@ class CarItemServiceTest {
 
         // update carItem
         val updateCarItem = carItem.copy(
-            last_change = LocalDate.now().plusMonths(1),
+            lastChange = LocalDate.now().plusMonths(1),
         )
 
         // update carItem using carItemService.updateCar
@@ -117,6 +117,6 @@ class CarItemServiceTest {
         val carItemById = carItem.id?.let { carItemService?.getCarItemById(it) }
 
         // assert updateCar new values
-        assertEquals(LocalDate.now().plusMonths(1), carItemById?.last_change)
+        assertEquals(LocalDate.now().plusMonths(1), carItemById?.lastChange)
     }
 }

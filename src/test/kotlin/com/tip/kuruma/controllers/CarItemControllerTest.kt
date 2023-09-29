@@ -108,7 +108,7 @@ class CarItemControllerTest {
         var updatedCarItem = carItemService?.getCarItemById(carItemSaved.id!!)
 
         // assert updateCarItem new values
-        assert(updatedCarItem?.last_change == LocalDate.now().minusMonths(2))
+        assert(updatedCarItem?.lastChange == LocalDate.now().minusMonths(2))
     }
 
     @Test
@@ -135,7 +135,7 @@ class CarItemControllerTest {
 
 
     private fun createAnyCarItem(): CarItem = CarItem(
-        last_change = LocalDate.now(),
+        lastChange = LocalDate.now(),
         maintenanceItem = MaintenanceItem(
                 id = 1,
                 code = "OIL",
