@@ -27,7 +27,7 @@ class CarItemService(
         return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem))
     }
 
-    fun getCarItemById(id: Long): CarItem? {
+    fun getCarItemById(id: Long): CarItem {
        LOGGER.info("Find car item with id $id")
         return carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
     }

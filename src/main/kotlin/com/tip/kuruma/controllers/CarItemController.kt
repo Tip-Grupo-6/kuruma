@@ -38,7 +38,7 @@ class CarItemController @Autowired constructor(
     fun getCarItemByID(@PathVariable id: Long): ResponseEntity<CarItemDTO> {
         LOGGER.info("Calling to GET /car_items/$id")
         val carItem = carItemService.getCarItemById(id)
-        return ResponseEntity.ok(carItem?.let { CarItemDTO.fromCarItem(it) })
+        return ResponseEntity.ok(carItem.let { CarItemDTO.fromCarItem(it) })
     }
 
     @PutMapping("/{id}")
