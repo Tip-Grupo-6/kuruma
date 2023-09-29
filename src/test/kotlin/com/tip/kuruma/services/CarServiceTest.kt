@@ -11,15 +11,16 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
 class CarServiceTest {
-    @Autowired
-    private val carService: CarService? = null
-
     private val carRepository: CarRepository  = mockk()
+    private val carItemService: CarItemService = mockk()
+    private val maintenanceService: MaintenanceService = mockk()
+
+    private val carService: CarService = CarService(carRepository, carItemService, maintenanceService)
 
     @BeforeEach
     fun setup() {
@@ -27,21 +28,16 @@ class CarServiceTest {
     }
 
     private fun builtCar(): Car {
-        var  car = CarBuilder().withCarItems(listOf()).build()
-        every { carRepository.save(car) } returns car
-        val savedCar = carService?.saveCar(car)
-        return savedCar!!
+        return CarBuilder().withCarItems(null).build()
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun getAllCars() {
         val car = builtCar()
 
         every { carRepository.findAll() } returns listOf(car)
 
-        val cars = carService?.getAllCars()
+        val cars = carService.getAllCars()
 
         // assert car info
         assert(cars?.isNotEmpty() == true)
@@ -50,35 +46,31 @@ class CarServiceTest {
         assert(cars?.get(0)?.color == "white")
 
         // Verify that the carRepository.findAll() is never called
-        verify(exactly = 0) {
+        verify(exactly = 1) {
             carRepository.findAll()
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun saveCar() {
-        val car = CarBuilder().withBrand("Peugeot").withModel("208").withColor("Black").build()
+        val car = CarBuilder().withBrand("Peugeot").withModel("208").withColor("Black").withCarItems(null).build()
         every { carRepository.save(car) } returns car
 
         // save car using carService.saveCar
-        val createdCar = carService?.saveCar(car)
+        val createdCar = carService.saveCar(car)
 
         // assert car info
-        assert(createdCar?.brand == "Peugeot")
-        assert(createdCar?.model == "208")
-        assert(createdCar?.color == "Black")
+        assert(createdCar.brand == "Peugeot")
+        assert(createdCar.model == "208")
+        assert(createdCar.color == "Black")
 
         // verify that carRepository.save() is never called
-        verify(exactly = 0) {
+        verify(exactly = 1) {
             carRepository.save(car)
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun getCarById() {
         val car = builtCar()
 <<<<<<< HEAD
@@ -98,16 +90,16 @@ class CarServiceTest {
         assert(carById?.color == "white")
 
         // verify that carRepository.findById() is never called
-        verify(exactly = 0) {
+        verify(exactly = 1) {
             carRepository.findById(car.id!!)
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun updateCar() {
            val car = builtCar()
+
+            every { carRepository.findById(car.id!!) } returns Optional.of(car)
 
             // update car
             val updatedCar = car.copy(
@@ -120,56 +112,48 @@ class CarServiceTest {
             every { carRepository.save(updatedCar) } returns updatedCar
 
             // update car using carService.updateCar
-            updatedCar.id?.let { carService?.updateCar(it, updatedCar) }
-
-            // get car by id
-            val carById = car.id?.let { carService?.getCarById(it) }
+            val carUpdated = carService.updateCar(car.id!!, updatedCar)
 
             // assert updateCar new values
-            assert(carById?.brand == "Another brand")
-            assert(carById?.model == "Another model")
-            assert(carById?.color == "Another color")
-            assert(carById?.year == 2023)
+            assert(carUpdated.brand == "Another brand")
+            assert(carUpdated.model == "Another model")
+            assert(carUpdated.color == "Another color")
+            assert(carUpdated.year == 2023)
 
             // verify that carRepository.save() is never called
-            verify(exactly = 0) {
-                carRepository.save(car)
+            verify(exactly = 1) {
+                carRepository.save(updatedCar)
             }
 
         }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun deleteCar() {
-        val car = builtCar()
-        every { carRepository.save(car) } returns car.copy(isDeleted = true)
+        var car = builtCar()
 
-        car.id?.let { carService?.deleteCar(it) }
+        every { carRepository.findById(car.id!!) } returns Optional.of(car)
+        every { carRepository.save( car.copy(isDeleted = true)) } returns car.copy(isDeleted = true)
 
-        // get car by id
-        val carById = car.id?.let { carService?.getCarById(it) }
+        carService.deleteCar(car.id!!)
 
-        // assert car info
-        assert(carById?.isDeleted == true)
-
-        // verify that carRepository.save() is never called
-        verify(exactly = 0) {
-            carRepository.save(car)
+        // Verify that carService.saveCar() is never called
+        verify(exactly = 1) {
+            carRepository.save(car.copy(isDeleted = true))
         }
 
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun deleteAllCars() {
         builtCar()
 
-        carService?.deleteAllCars()
+        every { carRepository.deleteAll() } returns Unit
 
-        val cars = carService?.getAllCars()
+        carService.deleteAllCars()
 
-        assert(cars?.isEmpty() == true)
+        // verify that carRepository.deleteAll() is never called
+        verify(exactly = 1) {
+            carRepository.deleteAll()
+        }
     }
 }

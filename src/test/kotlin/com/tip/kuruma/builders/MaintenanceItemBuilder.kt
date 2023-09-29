@@ -3,6 +3,7 @@ package com.tip.kuruma.builders
 import com.tip.kuruma.models.MaintenanceItem
 
 class MaintenanceItemBuilder {
+    private var id: Long = 1L
     private var code = "OIL"
     private var description = "Oil change"
     private var replacementFrequency = 6
@@ -24,6 +25,7 @@ class MaintenanceItemBuilder {
 
     fun build(): MaintenanceItem {
         return MaintenanceItem(
+            id = id,
             code = code,
             description = description,
             replacementFrequency = replacementFrequency

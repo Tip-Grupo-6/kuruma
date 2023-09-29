@@ -5,6 +5,7 @@ import com.tip.kuruma.models.MaintenanceItem
 import java.time.LocalDate
 
 class CarItemBuilder {
+    private var id: Long = 1L
     private var maintenanceItem: MaintenanceItem? = MaintenanceItemBuilder().build()
     private var lastChange =  LocalDate.now()
     private var isDeleted = false
@@ -26,6 +27,7 @@ class CarItemBuilder {
 
     fun build(): CarItem {
         return CarItem(
+            id = id,
             maintenanceItem = maintenanceItem,
             isDeleted = isDeleted,
             last_change = lastChange
