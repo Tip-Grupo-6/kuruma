@@ -29,8 +29,8 @@ class CarServiceTest {
     private fun builtCar(): Car {
         var  car = CarBuilder().withCarItems(listOf()).build()
         every { carRepository.save(car) } returns car
-        carService?.saveCar(car)
-        return car
+        val savedCar = carService?.saveCar(car)
+        return savedCar!!
     }
 
     @Test

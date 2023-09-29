@@ -9,6 +9,7 @@ data class CarItemDTO(
     var car_id: Long? = null,
     val code: String? = null,
     val name: String? = null,
+    val replacement_frequency: Int? = null,
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
     var due_status: Boolean = false,
@@ -21,6 +22,7 @@ data class CarItemDTO(
                 car_id = carItem.carId,
                 code = carItem.maintenanceItem?.code,
                 name = carItem.maintenanceItem?.description,
+                replacement_frequency = carItem.maintenanceItem?.replacementFrequency,
                 is_deleted = carItem.isDeleted,
                 last_change = carItem.lastChange
             )
@@ -39,8 +41,9 @@ data class CarItemDTO(
 
     fun toCarItem(): CarItem {
         return CarItem(
-                carId = this.id,
-                maintenanceItem = MaintenanceItem(code = this.code),
+                id = this.id,
+                carId = this.car_id,
+                maintenanceItem = MaintenanceItem(code = this.code, description = this.name, replacementFrequency = this.replacement_frequency),
                 lastChange = this.last_change ?: LocalDate.now(),
                 isDeleted = this.is_deleted
         )
