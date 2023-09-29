@@ -1,6 +1,8 @@
 package com.tip.kuruma.services
 
+import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.builders.CarItemBuilder
+import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.repositories.CarItemRepository
 import io.mockk.clearAllMocks
@@ -29,6 +31,13 @@ class CarItemServiceTest {
 
     private fun builtCarItem(): CarItem {
         return CarItemBuilder().build()
+    }
+
+    private fun builtCarItem2(): CarItem {
+        var  carItem = CarItemBuilder().build()
+        every { carItemRepository.save(carItem) } returns carItem
+        carItemService?.saveCarItem(carItem)
+        return carItem
     }
 
     @Test
