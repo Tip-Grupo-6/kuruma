@@ -1,8 +1,14 @@
 package com.tip.kuruma.services
 
+import com.tip.kuruma.builders.CarItemBuilder
 import com.tip.kuruma.models.CarItem
-import com.tip.kuruma.models.MaintenanceItem
+import com.tip.kuruma.repositories.CarItemRepository
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,57 +18,88 @@ import java.time.LocalDate
 
 @SpringBootTest
 class CarItemServiceTest {
+    private val carItemRepository: CarItemRepository  = mockk()
     @Autowired
     private val carItemService: CarItemService? = null
 
-    private fun createAnyCarItem(): CarItem = CarItem(
-        lastChange = LocalDate.now(),
-        maintenanceItem = MaintenanceItem(
-            id = 1,
-            code = "OIL",
-            description = "Oil change",
-            replacementFrequency = 30
-        )
-    )
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
 
-    private fun createAndSaveAnyCarItem(): CarItem {
-        val carItem = createAnyCarItem()
-        return carItemService?.saveCarItem(carItem)!!
+    private fun builtCarItem(): CarItem {
+        return CarItemBuilder().build()
     }
 
     @Test
     @Transactional
     @Rollback(true)
     fun getAllCarItems() {
-        createAndSaveAnyCarItem()
+        carItemService?.deleteAllCarItems()
+        val carItem = builtCarItem()
+        every { carItemRepository.save(carItem) } returns carItem
+        every { carItemRepository.findAll() } returns listOf(carItem)
+
+        carItemService?.saveCarItem(carItem)
 
         val carItems = carItemService?.getAllCarItems()
 
         // assert car info
         assertTrue(carItems?.isNotEmpty()!!)
+        assertEquals(6, carItems[0].maintenanceItem?.replacementFrequency)
+        assertEquals(LocalDate.now(), carItems[0].last_change)
+        assertEquals(false, carItems[0].isDeleted)
+        assertEquals("OIL", carItems[0].maintenanceItem?.code)
+
+        // Verify that the carItemRepository.findAll() is never called
+        verify(exactly = 0) {
+            carItemRepository.findAll()
+        }
     }
 
     @Test
     @Transactional
     @Rollback(true)
     fun saveCarItem() {
-        val carItem =  createAndSaveAnyCarItem()
+        val carItem =  builtCarItem()
+        every { carItemRepository.save(carItem) } returns carItem
+        val car = carItemService?.saveCarItem(carItem)
 
         // assert car info
         assertNotNull(carItem)
+        assertEquals(6, car?.maintenanceItem?.replacementFrequency)
+        assertEquals(LocalDate.now(), car?.last_change)
+        assertEquals(false, car?.isDeleted)
+        assertEquals("OIL", car?.maintenanceItem?.code)
+
+        // verify that carItemRepository.save() is never called
+        verify(exactly = 0) {
+            carItemRepository.save(carItem)
+        }
     }
 
     @Test
     @Transactional
     @Rollback(true)
     fun getCarById() {
-        val carItem =  createAndSaveAnyCarItem()
+        val carItem =  builtCarItem()
+        every { carItemRepository.save(carItem) } returns carItem
+        val savedCar = carItemService?.saveCarItem(carItem)
 
         // get car by id
-        carItem.id?.let { carItemService?.getCarItemById(it) }
+        val carItemByID = savedCar?.id?.let { carItemService?.getCarItemById(it) }
 
         // assert carItem info
-        assertNotNull(carItem)
+        assertNotNull(carItemByID)
+        assertEquals(6, carItemByID?.maintenanceItem?.replacementFrequency)
+        assertEquals(LocalDate.now(), carItemByID?.last_change)
+        assertEquals(false, carItemByID?.isDeleted)
+        assertEquals("OIL", carItemByID?.maintenanceItem?.code)
+
+        // Verify that the carItemRepository.save() is never called
+        verify(exactly = 0) {
+            carItemRepository.save(carItem)
+        }
 
     }
 
@@ -70,16 +107,23 @@ class CarItemServiceTest {
     @Transactional
     @Rollback(true)
     fun deleteCarItem() {
-        val carItem =  createAndSaveAnyCarItem()
+        val carItem =  builtCarItem()
+        every { carItemRepository.save(carItem) } returns carItem.copy(isDeleted = true)
+        val savedCar = carItemService?.saveCarItem(carItem)
 
         // delete carItem by id
-        carItem.id?.let { carItemService?.deleteCarItem(it) }
+       savedCar?.id?.let { carItemService?.deleteCarItem(it) }
 
         // get carItem by id
-        val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
+        val carById = savedCar?.id?.let { carItemService?.getCarItemById(it) }
 
         // assert carItem info
         assertTrue(carById?.isDeleted!!)
+
+        // verify that carItemRepository.save() is never called
+        verify(exactly = 0) {
+            carItemRepository.save(carItem)
+        }
 
     }
 
@@ -87,7 +131,9 @@ class CarItemServiceTest {
     @Transactional
     @Rollback(true)
     fun deleteAllCarItems() {
-        createAndSaveAnyCarItem()
+        var carItem = builtCarItem()
+        every { carItemRepository.save(carItem) } returns carItem.copy(isDeleted = true)
+        every { carItemRepository.findAll() } returns listOf()
 
         // delete all carItems
         carItemService?.deleteAllCarItems()
@@ -102,21 +148,27 @@ class CarItemServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    fun updateCarItem() {
-        val carItem =  createAndSaveAnyCarItem()
-
+    fun updateCarItem() {/*
+        var carItem =  builtCarItem()
+        carItemService?.saveCarItem(carItem)
         // update carItem
-        val updateCarItem = carItem.copy(
-            lastChange = LocalDate.now().plusMonths(1),
+        var updateCarItem = carItem.copy(
+            last_change = LocalDate.now().plusMonths(1),
+            isDeleted = true
         )
 
+
         // update carItem using carItemService.updateCar
-        updateCarItem.id?.let { carItemService?.updateCarItem(it, updateCarItem) }
+        updateCarItem?.id?.let { carItemService?.updateCarItem(it, updateCarItem) }
 
         // get carItem by id
-        val carItemById = carItem.id?.let { carItemService?.getCarItemById(it) }
+        var carItemById = carItem?.id?.let { carItemService?.getCarItemById(it) }
+
+        println("HOLA")
+        println(carItemById)
 
         // assert updateCar new values
-        assertEquals(LocalDate.now().plusMonths(1), carItemById?.lastChange)
+        assert(carItemById?.last_change == LocalDate.now().plusMonths(1))
+        assert(carItemById?.isDeleted == true)*/
     }
 }

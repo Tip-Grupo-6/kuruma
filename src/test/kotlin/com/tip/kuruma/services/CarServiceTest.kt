@@ -1,22 +1,18 @@
 package com.tip.kuruma.services
 
 import com.tip.kuruma.builders.CarBuilder
-import com.tip.kuruma.controllers.CarController
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.repositories.CarRepository
 import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import java.util.*
 
 @SpringBootTest
 class CarServiceTest {
@@ -83,7 +79,6 @@ class CarServiceTest {
     fun getCarById() {
         val car = builtCar()
         every { carRepository.save(car) } returns car
-        // mock returns optional car
         carService?.saveCar(car)
 
         // get car by id
