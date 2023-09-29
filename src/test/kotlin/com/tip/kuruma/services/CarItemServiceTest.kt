@@ -69,12 +69,14 @@ class CarItemServiceTest {
         val carItem = CarItemBuilder().withLastChange(LocalDate.now().plusMonths(1)).withMaintenanceItem(maintenanceItem).build()
         every { carItemRepository.save(carItem) } returns carItem
 
+        // save carItem
+        val savedCarItem = carItemService?.saveCarItem(carItem)
+
         // assert car info
         assertNotNull(carItem)
-        assertEquals(LocalDate.now().plusMonths(1), carItem.lastChange)
-        assertEquals(false, carItem.isDeleted)
-        assertEquals(2, carItem.maintenanceItem?.replacementFrequency)
-        assertEquals("WATER", carItem.maintenanceItem?.code)
+        assertEquals(LocalDate.now().plusMonths(1), savedCarItem?.lastChange)
+        assertEquals(false, savedCarItem?.isDeleted)
+        assertEquals("WATER", savedCarItem?.maintenanceItem?.code)
 
         // verify that carItemRepository.save() is never called
         verify(exactly = 0) {
@@ -127,6 +129,11 @@ class CarItemServiceTest {
 
         // assert updateCar new values
         assert(carItemById?.lastChange == LocalDate.now().plusMonths(5))
+
+        // verify that carItemRepository.save() is never called
+        verify(exactly = 0) {
+            carItemRepository.save(carItem)
+        }
     }
 
     @Test

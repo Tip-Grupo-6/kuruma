@@ -52,6 +52,7 @@ data class CarDTO(
 
     fun toCar(): Car {
         return Car(
+            id = this.id,
             brand = this.brand,
             model = this.model,
             year = this.year,

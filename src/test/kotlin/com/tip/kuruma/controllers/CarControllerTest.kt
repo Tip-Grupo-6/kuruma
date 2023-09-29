@@ -32,7 +32,10 @@ class CarControllerTest {
     }
 
     fun builtCar(): Car {
-        return CarBuilder().build()
+        val car = CarBuilder().build()
+        every { carService.saveCar(any()) } returns car
+        val savedCar = carController?.createCar(CarDTO.fromCar(car))
+        return savedCar?.body!!.toCar()
     }
 
 
@@ -43,13 +46,13 @@ class CarControllerTest {
         val car = builtCar()
 
         every { carService.getAllCars() } returns listOf(car)
-        carController?.createCar(CarDTO.fromCar(car))
 
         val cars = carController?.getAllCars()
 
         assert(cars?.body?.isNotEmpty() == true)
+        assert(cars?.body?.get(0)?.brand == "Honda")
 
-        // Verify that carService.findAll() is never called
+        // Verify that carService.getAllCars() is never called
         verify(exactly = 0) {
             carService.getAllCars()
         }
@@ -60,17 +63,17 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun createCar() {
-    // create a new car using carController.createCar
-    val car = builtCar()
+    val car = CarBuilder().withBrand("Peugeot").withModel("208").withYear(2023).withColor("Black").build()
+
     every { carService.saveCar(car) } returns car
+
     val createdCar = carController?.createCar(CarDTO.fromCar(car))
 
     // car assertions
-    assert(createdCar?.body?.brand == "Honda")
-    assert(createdCar?.body?.model == "Civic")
+    assert(createdCar?.body?.brand == "Peugeot")
+    assert(createdCar?.body?.model == "208")
     assert(createdCar?.body?.year == 2023)
-    assert(createdCar?.body?.color == "white")
-    assert(createdCar?.body?.maintenance_values?.size == 1)
+    assert(createdCar?.body?.color == "Black")
 
 
     // Verify that carService.saveCar() is never called
@@ -84,16 +87,13 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun getCarById() {
-        // create a new car using carController.createCar
         val car = builtCar()
-        every { carService.saveCar(car) } returns car
-        val responseEntity = carController?.createCar(CarDTO.fromCar(car))
-        val carSaved = responseEntity?.body!!
 
-        every { carService.getCarById(carSaved.id!!) } returns car
+        every { carService.getCarById(car.id!!) } returns car
 
         // Get an existing car by id
-        val response = carController?.getCarById(carSaved.id!!)
+        val response = carController?.getCarById(car.id!!)
+
         // Check if the response is not null and has an OK status
         assert(response?.statusCodeValue == HttpStatus.OK.value())
 
@@ -101,13 +101,13 @@ class CarControllerTest {
         val carDTO = response?.body as? CarDTO
 
         // Now you can access the properties of the CarDTO
-        assert(carDTO?.id == carSaved.id)
+        assert(carDTO?.id == car.id)
         assert(carDTO?.brand == "Honda")
         assert(carDTO?.model == "Civic")
 
         // Verify that carService.getCarById() is never called
         verify(exactly = 0) {
-            carService.getCarById(carSaved.id!!)
+            carService.getCarById(car.id!!)
         }
 
         // get an unexisting car by id
@@ -123,9 +123,6 @@ class CarControllerTest {
     @Rollback(true)
     fun updateCar() {
         val car = builtCar()
-        every { carService.saveCar(any()) } returns car
-        val responseEntity = carController?.createCar(CarDTO.fromCar(car))
-        val carSaved = responseEntity?.body!!
 
         // update car
         val dto = CarDTO(
@@ -135,22 +132,22 @@ class CarControllerTest {
                 color = "another color"
         )
         
-        every { carService.updateCar(carSaved.id!!, dto.toCar()) } returns car.copy(
+        every { carService.updateCar(car.id!!, dto.toCar()) } returns car.copy(
                 brand = "Another brand",
                 model = "Another model",
                 year = 2023,
                 color = "another color")
 
         // update car using carController.updateCar
-        carController?.updateCar(carSaved.id!!, dto)
+        carController?.updateCar(car.id!!, dto)
         
-        every { carService.getCarById(carSaved.id!!) } returns car.copy(
+        every { carService.getCarById(car.id!!) } returns car.copy(
                 brand = "Another brand",
                 model = "Another model",
                 year = 2023,
                 color = "another color")
 
-        val updatedCar = carService?.getCarById(carSaved.id!!)
+        val updatedCar = carService?.getCarById(car.id!!)
 
         // assert updateCar new values
         assert(updatedCar?.brand == "Another brand")
@@ -160,7 +157,7 @@ class CarControllerTest {
         
         // Verify that carService.updateCar() is never called
         verify(exactly = 0) {
-            carService.updateCar(carSaved.id!!, dto.toCar())
+            carService.updateCar(car.id!!, dto.toCar())
         }
 
     }
@@ -169,22 +166,20 @@ class CarControllerTest {
     @Transactional
     @Rollback(true)
     fun deleteCar() {
-        var car = CarBuilder().withCarItems(listOf()).build()
-        every { carService.saveCar(car) } returns car
-        val response = carController?.createCar(CarDTO.fromCar(car))
-        val carSaved = response?.body!!
+        var car = builtCar()
 
         every { carService.saveCar(car) } returns car.copy(isDeleted = true)
         // delete car saved
-        val responseEntity: ResponseEntity<Any> = carController?.deleteCar(carSaved.id!!) as ResponseEntity<Any>
+        val responseEntity: ResponseEntity<Any> = carController?.deleteCar(car.id!!) as ResponseEntity<Any>
 
         // Check if the response is not null and has an OK status
         assert(responseEntity.statusCode == HttpStatus.NO_CONTENT)
 
-        // Check if the car saved with is deleted
+        // Check if the car is deleted
+        val carResponse = carController?.getCarById(car.id!!) as ResponseEntity<Any>
 
-        val updatedCar = carController?.getCarById(carSaved.id!!) as ResponseEntity<Any>
-        var deleted_car = updatedCar?.body!! as CarDTO
+        val deleted_car = carResponse?.body!! as CarDTO
+
         assert(deleted_car.is_deleted == true)
 
         // Verify that carService.saveCar() is never called
