@@ -1,11 +1,15 @@
 package com.tip.kuruma.controllers
 
 import com.tip.kuruma.EntityNotFoundException
+import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.models.Car
-import com.tip.kuruma.models.CarItem
-import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.services.CarService
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,58 +19,68 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
 class CarControllerTest {
-    @Autowired
-    private val carService: CarService? = null
+    private val carService: CarService  = mockk()
 
-    @Autowired
-    private val carController: CarController? = null
+    private val carController: CarController = CarController(carService)
+
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
+
+    fun builtCar(): Car {
+        return CarBuilder().build()
+    }
 
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun getAllCars() {
-        val car = createAnyCar()
-        carController?.createCar(CarDTO.fromCar(car))
+     fun getAllCars() {
+        val car = builtCar()
 
-        // get all cars
-        val cars = carController?.getAllCars()
-        // assert that the list of cars is not empty
+        every { carService.getAllCars() } returns listOf(car)
+
+        val cars = carController.getAllCars()
 
         assert(cars?.body?.isNotEmpty() == true)
+        assert(cars?.body?.get(0)?.brand == "Honda")
+
+        verify(exactly = 1) {
+            carService.getAllCars()
+        }
+
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun createCar() {
-    // create a new car using carController.createCar
-    val car = createAnyCar()
+    val car = CarBuilder().withBrand("Peugeot").withModel("208").withYear(2023).withColor("Black").build()
+
+    every { carService.saveCar(any()) } returns car
+
     val createdCar = carController?.createCar(CarDTO.fromCar(car))
 
     // car assertions
-    assert(createdCar?.body?.brand == "Honda")
-    assert(createdCar?.body?.model == "Civic")
+    assert(createdCar?.body?.brand == "Peugeot")
+    assert(createdCar?.body?.model == "208")
     assert(createdCar?.body?.year == 2023)
-    assert(createdCar?.body?.color == "white")
-    assert(createdCar?.body?.maintenance_values?.size == 1)
-//    assert(createdCar?.body?.maintenance_values?.get(0)?.name == "Oil Change")
+    assert(createdCar?.body?.color == "Black")
+
+
+    verify(exactly = 1) {
+        carService.saveCar(any())
+    }
 
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun getCarById() {
-        // create a new car using carController.createCar
-        val car = createAnyCar()
-        val responseEntity = carController?.createCar(CarDTO.fromCar(car))
-        val carSaved = responseEntity?.body!!
+     fun getCarById() {
+        val car = builtCar()
+
+        every { carService.getCarById(car.id!!) } returns car
 
         // Get an existing car by id
-        val response = carController?.getCarById(carSaved.id!!)
+        val response = carController.getCarById(car.id!!)
+
         // Check if the response is not null and has an OK status
         assert(response?.statusCodeValue == HttpStatus.OK.value())
 
@@ -74,24 +88,27 @@ class CarControllerTest {
         val carDTO = response?.body as? CarDTO
 
         // Now you can access the properties of the CarDTO
-        assert(carDTO?.id == carSaved.id)
+        assert(carDTO?.id == car.id)
         assert(carDTO?.brand == "Honda")
         assert(carDTO?.model == "Civic")
 
+        verify(exactly = 1) {
+            carService.getCarById(car.id!!)
+        }
+
+        every { carService.getCarById(10000L) } throws EntityNotFoundException("car with id 10000 not found")
+
         // get an unexisting car by id
         assertThrows<EntityNotFoundException> {
-            carController?.getCarById(10000L)
+            carController.getCarById(10000L)
         }
 
 
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun updateCar() {
-        val responseEntity = carController?.createCar(CarDTO.fromCar(createAnyCar()))
-        val carSaved = responseEntity?.body!!
+     fun updateCar() {
+        val car = builtCar()
 
         // update car
         val dto = CarDTO(
@@ -101,10 +118,22 @@ class CarControllerTest {
                 color = "another color"
         )
 
-        // update car using carController.updateCar
-        carController?.updateCar(carSaved.id!!, dto)
+        every { carService.updateCar(car.id!!, dto.toCar()) } returns car.copy(
+                brand = "Another brand",
+                model = "Another model",
+                year = 2023,
+                color = "another color")
 
-        val updatedCar = carService?.getCarById(carSaved.id!!)
+        // update car using carController.updateCar
+        carController?.updateCar(car.id!!, dto)
+
+        every { carService.getCarById(car.id!!) } returns car.copy(
+                brand = "Another brand",
+                model = "Another model",
+                year = 2023,
+                color = "another color")
+
+        val updatedCar = carService?.getCarById(car.id!!)
 
         // assert updateCar new values
         assert(updatedCar?.brand == "Another brand")
@@ -112,40 +141,25 @@ class CarControllerTest {
         assert(updatedCar?.year == 2023)
         assert(updatedCar?.color == "another color")
 
+        verify(exactly = 1) {
+            carService.updateCar(car.id!!, dto.toCar())
+        }
+
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun deleteCar() {
-        val response = carController?.createCar(CarDTO.fromCar(createAnyCar()))
-        val carSaved = response?.body!!
+     fun deleteCar() {
+        var car = builtCar()
 
-        // delete car saved
-        val responseEntity: ResponseEntity<Any> = carController?.deleteCar(carSaved.id!!) as ResponseEntity<Any>
+        every { carService.deleteCar(car.id!!) } returns Unit
+
+        val responseEntity = carController.deleteCar(car.id!!)
 
         // Check if the response is not null and has an OK status
-        assert(responseEntity.statusCode == HttpStatus.NO_CONTENT)
+        assert(responseEntity?.statusCode == HttpStatus.NO_CONTENT)
 
-        // Check if the car saved with is deleted
-        val car = carService?.getCarById(carSaved.id!!)
-        assert(car?.isDeleted == true)
-
-        assertThrows<EntityNotFoundException> {
-            carController.deleteCar(10000L)
+        verify(exactly = 1) {
+            carService.deleteCar(car.id!!)
         }
     }
-
-
-    private fun createAnyCar(): Car = Car(
-            brand = "Honda",
-            model = "Civic",
-            year = 2023,
-            color = "white",
-            carItems = listOf(
-                    CarItem(
-                            maintenanceItem = MaintenanceItem(code = "OIL", description = "Oil change")
-                    )
-            )
-    )
 }

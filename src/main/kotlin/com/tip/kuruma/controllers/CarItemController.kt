@@ -38,14 +38,14 @@ class CarItemController @Autowired constructor(
     fun getCarItemByID(@PathVariable id: Long): ResponseEntity<CarItemDTO> {
         LOGGER.info("Calling to GET /car_items/$id")
         val carItem = carItemService.getCarItemById(id)
-        return ResponseEntity.ok(carItem?.let { CarItemDTO.fromCarItem(it) })
+        return ResponseEntity.ok(carItem.let { CarItemDTO.fromCarItem(it) })
     }
 
     @PutMapping("/{id}")
     fun updateCarItem(@PathVariable id: Long,@RequestBody carItemDTO: CarItemDTO): ResponseEntity<CarItemDTO> {
         LOGGER.info("Calling to PUT /car_items/$id with request $carItemDTO")
-        val car = carItemService.updateCarItem(id, carItemDTO.toCarItem())
-        return ResponseEntity.ok(CarItemDTO.fromCarItem(car))
+        val carItem = carItemService.updateCarItem(id, carItemDTO.toCarItem())
+        return ResponseEntity.ok(CarItemDTO.fromCarItem(carItem))
     }
 
     @DeleteMapping("/{id}")

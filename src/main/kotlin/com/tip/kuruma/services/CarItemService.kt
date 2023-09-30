@@ -27,23 +27,20 @@ class CarItemService(
         return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem))
     }
 
-    fun getCarItemById(id: Long): CarItem? {
+    fun getCarItemById(id: Long): CarItem {
        LOGGER.info("Find car item with id $id")
         return carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
     }
 
     fun updateCarItem(id: Long, carItem: CarItem): CarItem {
-        val carItemToUpdate = carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
-        carItemToUpdate?.let {
-            it.lastChange = carItem.lastChange
-            return carItemRepository.save(it)
+        val carItemToUpdate = getCarItemById(id)
+        return carItemRepository.save(carItemToUpdate.copy(lastChange = carItem.lastChange)).also {
+            LOGGER.info("Car Item with id $id has been updated")
         }
-       LOGGER.info("Car Item with id $id has been updated")
-        return carItem
     }
 
     fun deleteCarItem(id: Long) {
-        val carItemToDelete = carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
+        val carItemToDelete = getCarItemById(id)
         doLogicDelete(carItemToDelete)
     }
 

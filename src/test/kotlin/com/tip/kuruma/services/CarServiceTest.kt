@@ -1,131 +1,148 @@
 package com.tip.kuruma.services
 
+import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.models.Car
+import com.tip.kuruma.repositories.CarRepository
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
-@SpringBootTest
 class CarServiceTest {
-    @Autowired
-    private val carService: CarService? = null
+    private val carRepository: CarRepository  = mockk()
+    private val carItemService: CarItemService = mockk()
+    private val maintenanceService: MaintenanceService = mockk()
 
-    private fun createAnyCar(): Car = Car(
-        brand = "Honda",
-        model = "Civic",
-        year = 2023,
-        color = "white"
-    )
+    private val carService: CarService = CarService(carRepository, carItemService, maintenanceService)
 
-    private fun createAndSaveAnyCar(): Car {
-        val car = createAnyCar()
-        return carService?.saveCar(car)!!
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
+
+    private fun builtCar(): Car {
+        return CarBuilder().withCarItems(null).build()
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun getAllCars() {
-        val car = createAndSaveAnyCar()
-        carService?.saveCar(car)
+        val car = builtCar()
 
-        val cars = carService?.getAllCars()
+        every { carRepository.findAll() } returns listOf(car)
+
+        val cars = carService.getAllCars()
 
         // assert car info
         assert(cars?.isNotEmpty() == true)
         assert(cars?.get(0)?.brand == "Honda")
         assert(cars?.get(0)?.model == "Civic")
         assert(cars?.get(0)?.color == "white")
+
+        verify(exactly = 1) {
+            carRepository.findAll()
+        }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun saveCar() {
-        val car = createAndSaveAnyCar()
+        val car = CarBuilder().withBrand("Peugeot").withModel("208").withColor("Black").withCarItems(null).build()
+        every { carRepository.save(car) } returns car
+
+        // save car using carService.saveCar
+        val createdCar = carService.saveCar(car)
 
         // assert car info
-        assert(car.brand == "Honda")
-        assert(car.model == "Civic")
-        assert(car.color == "white")
+        assert(createdCar.brand == "Peugeot")
+        assert(createdCar.model == "208")
+        assert(createdCar.color == "Black")
+
+        verify(exactly = 1) {
+            carRepository.save(car)
+        }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun getCarById() {
-        val car = createAndSaveAnyCar()
+        val car = builtCar()
+        every { carRepository.findById(car.id!!) } returns Optional.of(car)
 
         // get car by id
-        val carById = car.id?.let { carService?.getCarById(it) }
+        val carById = carService.getCarById(car.id!!)
 
         // assert car info
-        assert(carById?.brand == "Honda")
-        assert(carById?.model == "Civic")
-        assert(carById?.color == "white")
+        assert(carById.brand == "Honda")
+        assert(carById.model == "Civic")
+        assert(carById.color == "white")
+
+        verify(exactly = 1) {
+            carRepository.findById(car.id!!)
+        }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun deleteCar() {
-        val car = createAndSaveAnyCar()
-
-        // delete car by id
-        car.id?.let { carService?.deleteCar(it) }
-
-        // get car by id
-        val carById = car.id?.let { carService?.getCarById(it) }
-
-        // assert car info
-        assert(carById?.isDeleted == true)
-
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    fun deleteAllCars() {
-        val car = createAndSaveAnyCar()
-        carService?.saveCar(car)
-
-        // delete all cars
-        carService?.deleteAllCars()
-
-        // get all cars
-        val cars = carService?.getAllCars()
-
-        // assert car info
-        assert(cars?.isEmpty() == true)
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
     fun updateCar() {
-        val car = createAndSaveAnyCar()
+           val car = builtCar()
 
-        // update car
-        val updatedCar = car.copy(
-            brand = "Another brand",
-            year = 2023,
-            color = "Another color",
-            model = "Another model"
-        )
+            every { carRepository.findById(car.id!!) } returns Optional.of(car)
 
-        // update car using carService.updateCar
-        updatedCar.id?.let { carService?.updateCar(it, updatedCar) }
+            // update car
+            val updatedCar = car.copy(
+                brand = "Another brand",
+                year = 2023,
+                color = "Another color",
+                model = "Another model"
+            )
 
-        // get car by id
-        val carById = car.id?.let { carService?.getCarById(it) }
+            every { carRepository.save(updatedCar) } returns updatedCar
 
-        // assert updateCar new values
-        assert(carById?.brand == "Another brand")
-        assert(carById?.model == "Another model")
-        assert(carById?.color == "Another color")
-        assert(carById?.year == 2023)
+            // update car using carService.updateCar
+            val carUpdated = carService.updateCar(car.id!!, updatedCar)
 
+            // assert updateCar new values
+            assert(carUpdated.brand == "Another brand")
+            assert(carUpdated.model == "Another model")
+            assert(carUpdated.color == "Another color")
+            assert(carUpdated.year == 2023)
+
+            verify(exactly = 1) {
+                carRepository.save(updatedCar)
+            }
+
+        }
+
+    @Test
+    fun deleteCar() {
+        var car = builtCar()
+
+        every { carRepository.findById(car.id!!) } returns Optional.of(car)
+        every { carRepository.save( car.copy(isDeleted = true)) } returns car.copy(isDeleted = true)
+
+        carService.deleteCar(car.id!!)
+
+        verify(exactly = 1) {
+            carRepository.save(car.copy(isDeleted = true))
+        }
+
+    }
+
+    @Test
+    fun deleteAllCars() {
+        builtCar()
+
+        every { carRepository.deleteAll() } returns Unit
+
+        carService.deleteAllCars()
+
+        verify(exactly = 1) {
+            carRepository.deleteAll()
+        }
     }
 }

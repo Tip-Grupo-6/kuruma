@@ -27,6 +27,6 @@ data class Car(
     }
 
     override fun toString(): String {
-        return "Car(id=$id, brand=$brand, model=$model, years=$year, color=$color, image=$image, isDeleted=$isDeleted)"
+        return "Car(id=$id, brand=$brand, model=$model, year=$year, color=$color, image=$image, isDeleted=$isDeleted, kilometers=$kilometers)"
     }
 }
