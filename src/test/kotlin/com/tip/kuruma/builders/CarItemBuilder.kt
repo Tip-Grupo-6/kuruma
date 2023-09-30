@@ -30,7 +30,7 @@ class CarItemBuilder {
             id = id,
             maintenanceItem = maintenanceItem,
             isDeleted = isDeleted,
-            last_change = lastChange
+            lastChange = lastChange
 
         )
     }

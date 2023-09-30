@@ -1,8 +1,10 @@
 package com.tip.kuruma.services
 
+import com.tip.kuruma.*
 import com.tip.kuruma.builders.CarItemBuilder
 import com.tip.kuruma.builders.MaintenanceItemBuilder
 import com.tip.kuruma.models.CarItem
+import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.repositories.CarItemRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -11,18 +13,16 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.Rollback
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.*
 
-@SpringBootTest
 class CarItemServiceTest {
-    private val carItemRepository: CarItemRepository  = mockk()
-    @Autowired
-    private val carItemService: CarItemService? = null
+
+    private val carItemRepository: CarItemRepository = mockk()
+    private val maintenanceService: MaintenanceService = mockk()
+    private val carItemService = CarItemService(
+            carItemRepository, maintenanceService
+    )
 
     @BeforeEach
     fun setup() {
@@ -30,148 +30,278 @@ class CarItemServiceTest {
     }
 
     private fun builtCarItem(): CarItem {
-        var  carItem = CarItemBuilder().build()
-        every { carItemRepository.save(carItem) } returns carItem
-        val savedCar = carItemService?.saveCarItem(carItem)
-        return savedCar!!
+        return CarItemBuilder().build()
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun getAllCarItems() {
+    fun `get all car items should no throw exception`() {
         val carItem = builtCarItem()
+        var carItems: List<CarItem> = listOf()
 
-        every { carItemRepository.findAll() } returns listOf(carItem)
+        GIVEN {
+            every { carItemRepository.findAll() } returns listOf(carItem)
+        }
 
-        carItemService?.saveCarItem(carItem)
+        EXPECT_NOT_THROW {
+            carItems = carItemService.getAllCarItems()
+        }
 
-        val carItems = carItemService?.getAllCarItems()
+        AND {
+            assertTrue(carItems.isNotEmpty())
+            with(carItems[0]) {
+                assertEquals(6, this.maintenanceItem?.replacementFrequency)
+                assertEquals(LocalDate.now(), this.lastChange)
+                assertEquals(false, this.isDeleted)
+                assertEquals("OIL", this.maintenanceItem?.code)
+            }
+        }
 
-        // assert car info
-        assertTrue(carItems?.isNotEmpty()!!)
-        assertEquals(6, carItems[0].maintenanceItem?.replacementFrequency)
-        assertEquals(LocalDate.now(), carItems[0].lastChange)
-        assertEquals(false, carItems[0].isDeleted)
-        assertEquals("OIL", carItems[0].maintenanceItem?.code)
-
-        // Verify that the carItemRepository.findAll() is never called
-        verify(exactly = 0) {
-            carItemRepository.findAll()
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findAll()
+            }
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     fun saveCarItem() {
+        val maintenanceItemFromDB = MaintenanceItem(code = "WATER")
         val maintenanceItem = MaintenanceItemBuilder().withCode("WATER").withReplacementFrequency(2).build()
         val carItem = CarItemBuilder().withLastChange(LocalDate.now().plusMonths(1)).withMaintenanceItem(maintenanceItem).build()
-        every { carItemRepository.save(carItem) } returns carItem
+
+        every { maintenanceService.findByCode(any()) } returns maintenanceItemFromDB
+        every { carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItemFromDB)) } returns carItem
 
         // save carItem
-        val savedCarItem = carItemService?.saveCarItem(carItem)
+        val savedCarItem = carItemService.saveCarItem(carItem)
 
         // assert car info
-        assertNotNull(carItem)
-        assertEquals(LocalDate.now().plusMonths(1), savedCarItem?.lastChange)
-        assertEquals(false, savedCarItem?.isDeleted)
-        assertEquals("WATER", savedCarItem?.maintenanceItem?.code)
+        assertNotNull(savedCarItem)
+        assertEquals(LocalDate.now().plusMonths(1), savedCarItem.lastChange)
+        assertEquals(false, savedCarItem.isDeleted)
+        assertEquals("WATER", savedCarItem.maintenanceItem?.code)
 
-        // verify that carItemRepository.save() is never called
-        verify(exactly = 0) {
-            carItemRepository.save(carItem)
+        verify(exactly = 1) {
+            maintenanceService.findByCode(any())
+            carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItemFromDB))
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun getCarItemById() {
+    fun `get car item by id should no throw exception`() {
         val carItem = builtCarItem()
+        var carItemSaved: CarItem? = null
 
-        every { carItemRepository.findById(carItem.id!!) } returns Optional.of(carItem)
-
-        // get car by id
-        val carItemSaved = carItem.id?.let { carItemService?.getCarItemById(it) }
-
-        // assert carItem info
-        assertEquals(LocalDate.now(), carItemSaved?.lastChange)
-        assertEquals(false, carItemSaved?.isDeleted)
-        assertEquals(6, carItemSaved?.maintenanceItem?.replacementFrequency)
-        assertEquals("OIL", carItemSaved?.maintenanceItem?.code)
-
-        // Verify that the carItemRepository.save() is never called
-        verify(exactly = 0) {
-            carItemRepository.save(carItem)
+        GIVEN {
+            every { carItemRepository.findById(carItem.id!!) } returns Optional.of(carItem)
         }
 
+        EXPECT_NOT_THROW {
+            carItemSaved = carItemService.getCarItemById(carItem.id!!)
+        }
+
+        AND {
+            with(carItemSaved!!) {
+                assertEquals(LocalDate.now(), this.lastChange)
+                assertEquals(false, this.isDeleted)
+                assertEquals(6, this.maintenanceItem?.replacementFrequency)
+                assertEquals("OIL", this.maintenanceItem?.code)
+            }
+        }
+
+        verify(exactly = 1) {
+            carItemRepository.findById(carItem.id!!)
+        }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun updateCarItem() {
-        var carItem =  builtCarItem()
+    fun `get car item should throw EntityNotFoundException when is not found on db`() {
+        val anyCarItemId = 1L
 
-        // update carItem
-        var updateCarItem = carItem.copy(
+        GIVEN {
+            every { carItemRepository.findById(anyCarItemId) } returns Optional.empty()
+        }
+
+        EXPECT_TO_THROW<EntityNotFoundException> {
+            carItemService.getCarItemById(anyCarItemId)
+        }
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findById(anyCarItemId)
+            }
+        }
+    }
+
+    @Test
+    fun `update car should no throw exception`() {
+        val anyCarItemId = 1L
+        val carItemFromDB =  builtCarItem()
+        val updateCarItem = carItemFromDB.copy(
                 lastChange = LocalDate.now().plusMonths(5)
         )
 
-        every { carItemRepository.save(updateCarItem) } returns updateCarItem
+        GIVEN {
+            every { carItemRepository.findById(anyCarItemId) } returns Optional.of(carItemFromDB)
+            every { carItemRepository.save(updateCarItem.copy(lastChange = updateCarItem.lastChange)) } returns updateCarItem.copy(lastChange = updateCarItem.lastChange)
+        }
 
-        // update carItem using carItemService.updateCar
-        updateCarItem.id?.let { carItemService?.updateCarItem(it, updateCarItem) }
+        EXPECT_NOT_THROW {
+            carItemService.updateCarItem(anyCarItemId, updateCarItem)
+        }
 
-        // get carItem by id
-        var carItemById = carItem.id?.let { carItemService?.getCarItemById(it) }
-
-        // assert updateCar new values
-        assert(carItemById?.lastChange == LocalDate.now().plusMonths(5))
-
-        // verify that carItemRepository.save() is never called
-        verify(exactly = 0) {
-            carItemRepository.save(carItem)
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findById(anyCarItemId)
+                carItemRepository.save(withArg {
+                    assertEquals(updateCarItem.lastChange, it.lastChange)
+                })
+            }
         }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun deleteCarItem() {
-        val carItem =  builtCarItem()
-        every { carItemRepository.save(carItem) } returns carItem.copy(isDeleted = true)
+    fun `when try update car not existent should throw exception and not update`() {
+        val anyCarItemId = 1L
+        val anyCarItem = CarItem()
 
-        // delete carItem by id
-       carItem.id?.let { carItemService?.deleteCarItem(it) }
-
-        // get carItem by id
-        val carById = carItem.id?.let { carItemService?.getCarItemById(it) }
-
-        // assert carItem info
-        assertTrue(carById?.isDeleted!!)
-
-        // verify that carItemRepository.save() is never called
-        verify(exactly = 0) {
-            carItemRepository.save(carItem)
+        GIVEN {
+            every { carItemRepository.findById(anyCarItemId) } returns Optional.empty()
         }
 
+        EXPECT_TO_THROW<EntityNotFoundException> {
+            carItemService.updateCarItem(anyCarItemId, anyCarItem)
+        }
+
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findById(anyCarItemId)
+            }
+            verify(exactly = 0) {
+                carItemRepository.save(any())
+            }
+        }
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
-    fun deleteAllCarItems() {
-        builtCarItem()
+    fun `delete car item should no throw exception`() {
+        val anyCarItemId = 1L
+        val carItem =  builtCarItem().copy(isDeleted = false)
 
-        // delete all carItems
-        carItemService?.deleteAllCarItems()
+        every { carItemRepository.findById(anyCarItemId) } returns Optional.of(carItem)
+        every { carItemRepository.save(any()) } returns carItem.copy(isDeleted = true)
 
-        // get all carItems
-        val carItems = carItemService?.getAllCarItems()
+        EXPECT_NOT_THROW {
+            carItemService.deleteCarItem(anyCarItemId)
+        }
 
-        // assert carItem info
-        assertTrue(carItems?.isEmpty()!!)
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findById(anyCarItemId)
+                carItemRepository.save(withArg {
+                    assertTrue(it.isDeleted!!)
+                })
+            }
+        }
+    }
+
+    @Test
+    fun `delete car item should throw exception when car not exists`() {
+        val anyCarItemId = 1L
+
+        every { carItemRepository.findById(anyCarItemId) } returns Optional.empty()
+
+        EXPECT_TO_THROW<EntityNotFoundException> {
+            carItemService.deleteCarItem(anyCarItemId)
+        }
+
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findById(anyCarItemId)
+            }
+            verify(exactly = 0) {
+                carItemRepository.save(any())
+            }
+        }
+    }
+
+    @Test
+    fun `delete all car items should no throw exception`() {
+        GIVEN {
+            every { carItemRepository.deleteAll() } returns Unit
+        }
+
+        EXPECT_NOT_THROW {
+            carItemService.deleteAllCarItems()
+        }
+
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.deleteAll()
+            }
+        }
+    }
+
+    @Test
+    fun `update a car items of car id should do logical delete for car items before, save new ones and no throw exception`() {
+        val anyCarId = 1L
+        val newCarItems = listOf(CarItem(maintenanceItem = MaintenanceItem(code = "OIL"), lastChange = LocalDate.now()))
+        val carItemFromDB = listOf(CarItem(maintenanceItem = MaintenanceItem(code = "OIL"), lastChange = LocalDate.now().minusMonths(1)))
+        val maintenanceItemFromDB = MaintenanceItem(code = "OIL")
+
+        GIVEN {
+            every { carItemRepository.findByCarId(anyCarId) } returns carItemFromDB
+            every { carItemRepository.save(any()) } returns CarItem() //cualquier car item, no necesitamos la respuesta
+            every { maintenanceService.findByCode(any()) } returns maintenanceItemFromDB
+            every { carItemRepository.save(any()) } returns CarItem() //cualquier car item, no necesitamos la respuesta
+        }
+
+        EXPECT_NOT_THROW {
+            carItemService.updateCarItems(anyCarId, newCarItems)
+        }
+
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findByCarId(anyCarId)
+                carItemRepository.save(withArg {
+                    assertTrue(it.isDeleted!!)
+                })
+                maintenanceService.findByCode(any())
+                carItemRepository.save(withArg {
+                    assertEquals(anyCarId, it.carId)
+                })
+            }
+        }
+    }
+
+    @Test
+    fun `update a car items of car id should do not logical delete if has not car items in db and save new ones and no throw exception`() {
+        val anyCarId = 1L
+        val newCarItems = listOf(CarItem(maintenanceItem = MaintenanceItem(code = "OIL"), lastChange = LocalDate.now()))
+        val maintenanceItemFromDB = MaintenanceItem(code = "OIL")
+
+        GIVEN {
+            every { carItemRepository.findByCarId(anyCarId) } returns listOf()
+            every { maintenanceService.findByCode(any()) } returns maintenanceItemFromDB
+            every { carItemRepository.save(any()) } returns CarItem() //cualquier car item, no necesitamos la respuesta
+        }
+
+        EXPECT_NOT_THROW {
+            carItemService.updateCarItems(anyCarId, newCarItems)
+        }
+
+        AND {
+            verify(exactly = 1) {
+                carItemRepository.findByCarId(anyCarId)
+                maintenanceService.findByCode(any())
+                carItemRepository.save(withArg {
+                    assertEquals(anyCarId, it.carId)
+                })
+            }
+            verify(exactly = 0) {
+                carItemRepository.save(withArg {
+                    assertTrue(it.isDeleted!!)
+                })
+            }
+        }
     }
 }

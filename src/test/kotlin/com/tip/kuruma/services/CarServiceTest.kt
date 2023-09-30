@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 class CarServiceTest {
     private val carRepository: CarRepository  = mockk()
@@ -45,7 +46,6 @@ class CarServiceTest {
         assert(cars?.get(0)?.model == "Civic")
         assert(cars?.get(0)?.color == "white")
 
-        // Verify that the carRepository.findAll() is never called
         verify(exactly = 1) {
             carRepository.findAll()
         }
@@ -64,7 +64,6 @@ class CarServiceTest {
         assert(createdCar.model == "208")
         assert(createdCar.color == "Black")
 
-        // verify that carRepository.save() is never called
         verify(exactly = 1) {
             carRepository.save(car)
         }
@@ -73,23 +72,16 @@ class CarServiceTest {
     @Test
     fun getCarById() {
         val car = builtCar()
-<<<<<<< HEAD
-        every { carRepository.save(car) } returns car
-        carService?.saveCar(car)
-=======
-
         every { carRepository.findById(car.id!!) } returns Optional.of(car)
->>>>>>> 78b0dc1 (Adjust & Improve CarService test and make it DRY)
 
         // get car by id
-        val carById = car.id?.let { carService?.getCarById(it) }
+        val carById = carService.getCarById(car.id!!)
 
         // assert car info
-        assert(carById?.brand == "Honda")
-        assert(carById?.model == "Civic")
-        assert(carById?.color == "white")
+        assert(carById.brand == "Honda")
+        assert(carById.model == "Civic")
+        assert(carById.color == "white")
 
-        // verify that carRepository.findById() is never called
         verify(exactly = 1) {
             carRepository.findById(car.id!!)
         }
@@ -120,7 +112,6 @@ class CarServiceTest {
             assert(carUpdated.color == "Another color")
             assert(carUpdated.year == 2023)
 
-            // verify that carRepository.save() is never called
             verify(exactly = 1) {
                 carRepository.save(updatedCar)
             }
@@ -136,7 +127,6 @@ class CarServiceTest {
 
         carService.deleteCar(car.id!!)
 
-        // Verify that carService.saveCar() is never called
         verify(exactly = 1) {
             carRepository.save(car.copy(isDeleted = true))
         }
@@ -151,7 +141,6 @@ class CarServiceTest {
 
         carService.deleteAllCars()
 
-        // verify that carRepository.deleteAll() is never called
         verify(exactly = 1) {
             carRepository.deleteAll()
         }

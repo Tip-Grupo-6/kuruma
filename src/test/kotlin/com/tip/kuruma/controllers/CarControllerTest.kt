@@ -45,7 +45,6 @@ class CarControllerTest {
         assert(cars?.body?.isNotEmpty() == true)
         assert(cars?.body?.get(0)?.brand == "Honda")
 
-        // Verify that carService.getAllCars() is never called
         verify(exactly = 1) {
             carService.getAllCars()
         }
@@ -67,7 +66,6 @@ class CarControllerTest {
     assert(createdCar?.body?.color == "Black")
 
 
-    // Verify that carService.saveCar() is never called
     verify(exactly = 1) {
         carService.saveCar(any())
     }
@@ -94,7 +92,6 @@ class CarControllerTest {
         assert(carDTO?.brand == "Honda")
         assert(carDTO?.model == "Civic")
 
-        // Verify that carService.getCarById() is never called
         verify(exactly = 1) {
             carService.getCarById(car.id!!)
         }
@@ -120,7 +117,7 @@ class CarControllerTest {
                 year = 2023,
                 color = "another color"
         )
-        
+
         every { carService.updateCar(car.id!!, dto.toCar()) } returns car.copy(
                 brand = "Another brand",
                 model = "Another model",
@@ -129,7 +126,7 @@ class CarControllerTest {
 
         // update car using carController.updateCar
         carController?.updateCar(car.id!!, dto)
-        
+
         every { carService.getCarById(car.id!!) } returns car.copy(
                 brand = "Another brand",
                 model = "Another model",
@@ -143,8 +140,7 @@ class CarControllerTest {
         assert(updatedCar?.model == "Another model")
         assert(updatedCar?.year == 2023)
         assert(updatedCar?.color == "another color")
-        
-        // Verify that carService.updateCar() is never called
+
         verify(exactly = 1) {
             carService.updateCar(car.id!!, dto.toCar())
         }
@@ -162,7 +158,6 @@ class CarControllerTest {
         // Check if the response is not null and has an OK status
         assert(responseEntity?.statusCode == HttpStatus.NO_CONTENT)
 
-        // Verify that carService.saveCar() is never called
         verify(exactly = 1) {
             carService.deleteCar(car.id!!)
         }
