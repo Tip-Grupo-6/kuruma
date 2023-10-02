@@ -1,9 +1,11 @@
 package com.tip.kuruma.controllers
 
+import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.services.CarService
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.any
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -26,6 +28,8 @@ class CarControllerTest {
     private fun builtCar(): Car {
         return CarBuilder().build()
     }
+
+    // GET /cars
 
     @Test
     fun `fetching all cars when there is one of the available `() {
@@ -52,6 +56,35 @@ class CarControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isEmpty)
+    }
+
+    // GET /cars/{id}
+
+    @Test
+    fun `fetching a car by id when it exists`() {
+        val car = builtCar()
+        // Mock the behavior of the carService to return some dummy data
+        `when`(carService.getCarById(car.id!!)).thenReturn(car)
+
+        // Perform the GET request to the /cars/{id} endpoint and validate the response
+        mockMvc.perform(get("/cars/${car.id!!}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.brand").value("Honda"))
+            .andExpect(jsonPath("$.model").value("Civic"))
+            .andExpect(jsonPath("$.year").value(2023))
+    }
+
+    @Test
+    fun `fetching a car by id when it does not exist`() {
+        // Mock the behavior of the carService to return Not Found Car
+        `when`(carService.getCarById(1L)).thenThrow(EntityNotFoundException::class.java)
+
+        // Perform the GET request to the /cars/{id} endpoint and validate the response
+        mockMvc.perform(get("/cars/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
     }
 
 }
