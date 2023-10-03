@@ -92,28 +92,23 @@ class CarControllerTest {
 
     @Test
     fun `sending a car body for creation and receiving a successful car response`() {
-        val car = CarBuilder()
-                .withBrand("Honda")
-                .withModel("Civic")
-                .withColor("White")
-                .withYear(2023)
-                .build()
-
-
         val carDTO = CarDTO(
-                brand = "Honda",
-                model = "Civic",
-                year = 2023,
-                color = "Red",
-                image = "car_url"
+            brand = "Honda",
+            model = "Civic",
+            year = 2023,
+            color = "Red"
         )
 
-        println("HOLA")
-        println(car)
-        println(car.copy(id = 1L))
+        val savedCar = CarBuilder()
+            .withId(1L)
+            .withBrand("Honda")
+            .withModel("Civic")
+            .withYear(2023)
+            .withColor("Red")
+            .build()
 
         // Mock the behavior of the carService to return a valid Car object
-        `when`(carService.saveCar(car).thenReturn(car.copy(id = 1L))
+        `when`(carService.saveCar(carDTO.toCar())).thenReturn(savedCar)
 
         // Perform the POST request to the /cars endpoint and validate the response
         mockMvc.perform(post("/cars")
@@ -128,7 +123,7 @@ class CarControllerTest {
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.brand").value("Honda"))
             .andExpect(jsonPath("$.model").value("Civic"))
-            .andExpect(jsonPath("$.color").value("White"))
+            .andExpect(jsonPath("$.color").value("Red"))
             .andExpect(jsonPath("$.year").value(2023))
 
 }
