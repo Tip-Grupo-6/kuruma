@@ -2,10 +2,10 @@ package com.tip.kuruma.controllers
 
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarBuilder
+import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.services.CarService
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.any
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -87,4 +88,48 @@ class CarControllerTest {
             .andExpect(status().isNotFound)
     }
 
+    // POST /cars
+
+    @Test
+    fun `sending a car body for creation and receiving a successful car response`() {
+        val car = CarBuilder()
+                .withBrand("Honda")
+                .withModel("Civic")
+                .withColor("White")
+                .withYear(2023)
+                .build()
+
+
+        val carDTO = CarDTO(
+                brand = "Honda",
+                model = "Civic",
+                year = 2023,
+                color = "Red",
+                image = "car_url"
+        )
+
+        println("HOLA")
+        println(car)
+        println(car.copy(id = 1L))
+
+        // Mock the behavior of the carService to return a valid Car object
+        `when`(carService.saveCar(car).thenReturn(car.copy(id = 1L))
+
+        // Perform the POST request to the /cars endpoint and validate the response
+        mockMvc.perform(post("/cars")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{
+                "brand": "Honda",
+                "model": "Civic",
+                "year": 2023,
+                "color": "Red"
+            }""".trimIndent()))
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.brand").value("Honda"))
+            .andExpect(jsonPath("$.model").value("Civic"))
+            .andExpect(jsonPath("$.color").value("White"))
+            .andExpect(jsonPath("$.year").value(2023))
+
+}
 }
