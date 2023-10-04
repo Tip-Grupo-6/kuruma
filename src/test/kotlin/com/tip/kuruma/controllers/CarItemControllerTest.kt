@@ -33,14 +33,14 @@ class CarItemControllerTest {
         return CarItemBuilder().build()
     }
 
-    // GET /carItems
+    // GET /car_items
 
     @Test
     fun `fetching all carItems when there is one of the available `() {
         // Mock the behavior of the carItemService to return some dummy data
         `when`(carItemService.getAllCarItems()).thenReturn(listOf(builtCarItem()))
 
-        // Perform the GET request to the /carItems endpoint and validate the response
+        // Perform the GET request to the /car_items endpoint and validate the response
         mockMvc.perform(get("/car_items")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -57,14 +57,14 @@ class CarItemControllerTest {
         // Mock the behavior of the carItemService to return some dummy data
         `when`(carItemService.getAllCarItems()).thenReturn(listOf())
 
-        // Perform the GET request to the /carItems endpoint and validate the response
+        // Perform the GET request to the /car_items endpoint and validate the response
         mockMvc.perform(get("/car_items")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isEmpty)
     }
 
-    // GET /carItems/{id}
+    // GET /car_items/{id}
 
     @Test
     fun `fetching a carItem by id when it exists`() {
@@ -94,7 +94,7 @@ class CarItemControllerTest {
             .andExpect(status().isNotFound)
     }
 
-    // POST /carItems
+    // POST /car_items
 
 
 
@@ -131,26 +131,26 @@ class CarItemControllerTest {
     */}
 
 
-    // DELETE /carItems/{id}
+    // DELETE /car_items/{id}
 
     @Test
-    fun `deleting a car by id when it exists`() {
+    fun `deleting a carItem by id when it exists`() {
         val carItem = builtCarItem()
-        // Mock the behavior of the carService to return some dummy data
+        // Mock the behavior of the carItemService to return some dummy data
         `when`(carItemService.getCarItemById(carItem.id!!)).thenReturn(carItem)
 
-        // Perform the DELETE request to the /cars/{id} endpoint and validate the response
+        // Perform the DELETE request to the /car_items/{id} endpoint and validate the response
         mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/${carItem.id!!}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent)
     }
 
     @Test
-    fun `deleting a car by id when it does not exist`() {
-        // Mock the behavior of the carItemService to return Not Found Car
+    fun `deleting a carItem by id when it does not exist`() {
+        // Mock the behavior of the carItemService to return Not Found CarItem
         `when`(carItemService.deleteCarItem(1L)).thenThrow(EntityNotFoundException::class.java)
 
-        // Perform the DELETE request to the /cars/{id} endpoint and validate the response
+        // Perform the DELETE request to the /car_items/{id} endpoint and validate the response
         mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound)
