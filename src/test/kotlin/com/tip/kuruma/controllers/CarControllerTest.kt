@@ -1,8 +1,11 @@
 package com.tip.kuruma.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.dto.CarDTO
+import com.tip.kuruma.dto.CarItemDTO
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.services.CarService
 import org.junit.jupiter.api.Test
@@ -112,12 +115,7 @@ class CarControllerTest {
         // Perform the POST request to the /cars endpoint and validate the response
         mockMvc.perform(post("/cars")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{
-                "brand": "Honda",
-                "model": "Civic",
-                "year": 2023,
-                "color": "Red"
-            }""".trimIndent()))
+            .content(toJson(carDTO)))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.brand").value("Honda"))
@@ -161,12 +159,7 @@ class CarControllerTest {
         // Perform the PUT request to the /cars/{id} endpoint and validate the response
         mockMvc.perform(put("/cars/1")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{
-                "brand": "Peugeot",
-                "model": "208",
-                "year": 2023,
-                "color": "Black"
-            }""".trimIndent()))
+            .content(toJson(updateCarDTO)))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.brand").value("Peugeot"))
@@ -191,12 +184,7 @@ class CarControllerTest {
         // Perform the PUT request to the /cars/{id} endpoint and validate the response
         mockMvc.perform(put("/cars/1")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{
-                "brand": "Peugeot",
-                "model": "208",
-                "year": 2023,
-                "color": "Black"
-            }""".trimIndent()))
+            .content(toJson(updateCarDTO)))
             .andExpect(status().isNotFound)
     }
 
@@ -223,5 +211,11 @@ class CarControllerTest {
         mockMvc.perform(delete("/cars/1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound)
+    }
+
+    private fun toJson(carDTO: CarDTO): String {
+        val objectMapper = ObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        return objectMapper.writeValueAsString(carDTO)
     }
 }

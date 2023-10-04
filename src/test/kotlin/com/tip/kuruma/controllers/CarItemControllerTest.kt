@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarItemBuilder
+import com.tip.kuruma.builders.MaintenanceItemBuilder
+import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.dto.CarItemDTO
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.services.CarItemService
@@ -102,8 +104,6 @@ class CarItemControllerTest {
 
     // POST /car_items
 
-
-
     @Test
     fun `sending a carItem body for creation and receiving a successful carItem response` () {
         val carItem = builtCarItem()
@@ -127,6 +127,56 @@ class CarItemControllerTest {
                 .andExpect(jsonPath("$.code").value("OIL"))
                 .andExpect(jsonPath("$.name").value("Oil change"))
                 .andExpect(jsonPath("$.replacement_frequency").value(6))
+    }
+
+    // PUT /car_items/{id}
+    @Test
+    fun `sending a carItem body for update and receiving a successful carItem response`() {
+        val maintenanceItem = MaintenanceItemBuilder().withCode("WATER").withDescription("Water change").withReplacementFrequency(2).build()
+        val carItem = CarItemBuilder().withMaintenanceItem(maintenanceItem).withLastChange(LocalDate.of(2023, 1, 1)).build()
+        val carItemDTO = CarItemDTO(
+            car_id = 1,
+            code = maintenanceItem.code,
+            name = maintenanceItem.description,
+            replacement_frequency = maintenanceItem.replacementFrequency,
+            last_change = LocalDate.of(2023, 1, 1)
+        )
+        // Mock the behavior of the carService to return some dummy data
+        `when`(carItemService.updateCarItem(1L, carItemDTO.toCarItem())).thenReturn(carItem)
+
+        // Perform the PUT request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(
+            MockMvcRequestBuilders.put("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(carItemDTO)))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.last_change").value(LocalDate.of(2023, 1, 1).toString()))
+            .andExpect(jsonPath("$.code").value(maintenanceItem.code))
+            .andExpect(jsonPath("$.name").value(maintenanceItem.description))
+            .andExpect(jsonPath("$.replacement_frequency").value(maintenanceItem.replacementFrequency))
+    }
+
+
+    @Test
+    fun `sending a carItem body for update and receiving a not found response`() {
+        val carItemDTO = CarItemDTO(
+            car_id = 1,
+            code = "OIL",
+            name = "Oil change",
+            replacement_frequency = 6,
+            last_change = LocalDate.of(2021, 1, 1)
+        )
+
+        // Mock the behavior of the carService to return a valid Car object
+        `when`(carItemService.updateCarItem(1L, carItemDTO.toCarItem())).thenThrow(EntityNotFoundException::class.java)
+
+        // Perform the PUT request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(
+            MockMvcRequestBuilders.put("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(carItemDTO)))
+            .andExpect(status().isNotFound)
     }
 
 
