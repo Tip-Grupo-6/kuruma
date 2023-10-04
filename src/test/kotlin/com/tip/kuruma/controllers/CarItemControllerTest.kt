@@ -1,10 +1,14 @@
 package com.tip.kuruma.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarItemBuilder
+import com.tip.kuruma.dto.CarItemDTO
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.services.CarItemService
 import com.tip.kuruma.services.MaintenanceService
+import io.vertx.core.json.jackson.DatabindCodec.mapper
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,9 +18,11 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
+
 
 @WebMvcTest(CarItemController::class)
 class CarItemControllerTest {
@@ -100,35 +106,28 @@ class CarItemControllerTest {
 
     @Test
     fun `sending a carItem body for creation and receiving a successful carItem response` () {
-        /*val carItem = builtCarItem()
-        val maintenanceItem = MaintenanceItem(
-                code = carItem.maintenanceItem?.code,
-                description = carItem.maintenanceItem?.description,
-                replacementFrequency = carItem.maintenanceItem?.replacementFrequency
+        val carItem = builtCarItem()
+        val carItemDTO = CarItemDTO(
+                car_id = 1,
+                code = "OIL",
+                name = "Oil change",
+                replacement_frequency = 6,
+                last_change = LocalDate.of(2021, 1, 1)
         )
         // Mock the behavior of the carItemService to return some dummy data
-        `when`(carItemService.saveCarItem(carItem)).thenReturn(carItem)
-        `when`(maintenanceService.findByCode(carItem.maintenanceItem?.code!!)).thenReturn(maintenanceItem)
+        `when`(carItemService.saveCarItem(carItemDTO.toCarItem())).thenReturn(carItem)
 
         // Perform the POST request to the /carItems endpoint and validate the response
         mockMvc.perform(post("/car_items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                {
-                    "car_id": 1,
-                    "code": "OIL",
-                    "name": "Oil change",
-                    "replacement_frequency": 6,
-                    "last_change": "2021-01-01"
-                }
-            """.trimIndent()))
+                .content(toJson(carItemDTO)))
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.last_change").value(LocalDate.now().toString()))
                 .andExpect(jsonPath("$.code").value("OIL"))
                 .andExpect(jsonPath("$.name").value("Oil change"))
                 .andExpect(jsonPath("$.replacement_frequency").value(6))
-    */}
+    }
 
 
     // DELETE /car_items/{id}
@@ -154,6 +153,12 @@ class CarItemControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound)
+    }
+
+    private fun toJson(carItemDTO: CarItemDTO): String {
+        val objectMapper = ObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        return objectMapper.writeValueAsString(carItemDTO)
     }
 
 }
