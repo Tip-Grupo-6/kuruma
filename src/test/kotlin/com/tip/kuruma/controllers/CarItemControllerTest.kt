@@ -3,7 +3,6 @@ package com.tip.kuruma.controllers
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarItemBuilder
 import com.tip.kuruma.models.CarItem
-import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.services.CarItemService
 import com.tip.kuruma.services.MaintenanceService
 import org.junit.jupiter.api.Test
@@ -13,8 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -97,19 +96,24 @@ class CarItemControllerTest {
 
     // POST /carItems
 
-    @Test
-    fun `creating a carItem`() {/*
-        val carItem = builtCarItem()
-        val maintenanceItem = carItem.maintenanceItem
-        val car = builtCarItem()
-        `when`(maintenanceService.findByCode(maintenanceItem?.code!!)).thenReturn(maintenanceItem)
-        `when`(carItemService.saveCarItem(carItem)).thenReturn(carItem.copy(maintenanceItem = maintenanceItem))
 
+
+    @Test
+    fun `sending a carItem body for creation and receiving a successful carItem response` () {
+        /*val carItem = builtCarItem()
+        val maintenanceItem = MaintenanceItem(
+                code = carItem.maintenanceItem?.code,
+                description = carItem.maintenanceItem?.description,
+                replacementFrequency = carItem.maintenanceItem?.replacementFrequency
+        )
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.saveCarItem(carItem)).thenReturn(carItem)
+        `when`(maintenanceService.findByCode(carItem.maintenanceItem?.code!!)).thenReturn(maintenanceItem)
 
         // Perform the POST request to the /carItems endpoint and validate the response
         mockMvc.perform(post("/car_items")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
                 {
                     "car_id": 1,
                     "code": "OIL",
@@ -118,11 +122,38 @@ class CarItemControllerTest {
                     "last_change": "2021-01-01"
                 }
             """.trimIndent()))
-            .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.last_change").value(LocalDate.now().toString()))
-            .andExpect(jsonPath("$.code").value("OIL"))
-            .andExpect(jsonPath("$.name").value("Oil change"))
-            .andExpect(jsonPath("$.replacement_frequency").value(6))
-   */ }
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.last_change").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.code").value("OIL"))
+                .andExpect(jsonPath("$.name").value("Oil change"))
+                .andExpect(jsonPath("$.replacement_frequency").value(6))
+    */}
+
+
+    // DELETE /carItems/{id}
+
+    @Test
+    fun `deleting a car by id when it exists`() {
+        val carItem = builtCarItem()
+        // Mock the behavior of the carService to return some dummy data
+        `when`(carItemService.getCarItemById(carItem.id!!)).thenReturn(carItem)
+
+        // Perform the DELETE request to the /cars/{id} endpoint and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/${carItem.id!!}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `deleting a car by id when it does not exist`() {
+        // Mock the behavior of the carItemService to return Not Found Car
+        `when`(carItemService.deleteCarItem(1L)).thenThrow(EntityNotFoundException::class.java)
+
+        // Perform the DELETE request to the /cars/{id} endpoint and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound)
+    }
+
 }
