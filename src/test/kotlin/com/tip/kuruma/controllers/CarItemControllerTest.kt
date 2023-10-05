@@ -1,126 +1,214 @@
 package com.tip.kuruma.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarItemBuilder
 import com.tip.kuruma.builders.MaintenanceItemBuilder
+import com.tip.kuruma.dto.CarDTO
 import com.tip.kuruma.dto.CarItemDTO
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.services.CarItemService
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
+import com.tip.kuruma.services.MaintenanceService
+import io.vertx.core.json.jackson.DatabindCodec.mapper
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
+import org.mockito.Mockito.`when`
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 
+
+@WebMvcTest(CarItemController::class)
 class CarItemControllerTest {
 
-    private val carItemService: CarItemService = mockk()
-    private val carItemController = CarItemController(carItemService)
+    @Autowired
+    private lateinit var mockMvc: MockMvc
 
-    @BeforeEach
-    fun setup() {
-        clearAllMocks()
-    }
+    @MockBean
+    private lateinit var carItemService: CarItemService
+    @MockBean
+    private lateinit var maintenanceService: MaintenanceService
 
     fun builtCarItem(): CarItem {
         return CarItemBuilder().build()
     }
 
-
+    // GET /car_items
 
     @Test
-    fun getAllCarItems() {
+    fun `fetching all carItems when there is one of the available `() {
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.getAllCarItems()).thenReturn(listOf(builtCarItem()))
+
+        // Perform the GET request to the /car_items endpoint and validate the response
+        mockMvc.perform(get("/car_items")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].last_change").value(LocalDate.now().toString()))
+            .andExpect(jsonPath("$[0].code").value("OIL"))
+            .andExpect(jsonPath("$[0].name").value("Oil change"))
+            .andExpect(jsonPath("$[0].replacement_frequency").value(6))
+
+    }
+
+    @Test
+    fun `fetching all carItems when there is none of the available `() {
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.getAllCarItems()).thenReturn(listOf())
+
+        // Perform the GET request to the /car_items endpoint and validate the response
+        mockMvc.perform(get("/car_items")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isEmpty)
+    }
+
+    // GET /car_items/{id}
+
+    @Test
+    fun `fetching a carItem by id when it exists`() {
         val carItem = builtCarItem()
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.getCarItemById(1)).thenReturn(carItem)
 
-        every { carItemService.getAllCarItems() } returns listOf(carItem)
-
-        val responseEntity = carItemController.getAllCarItems()
-
-        assertTrue(responseEntity.body?.isNotEmpty()!!)
-        assertEquals(LocalDate.now(), responseEntity.body?.get(0)?.last_change)
-        assertFalse(responseEntity.body?.get(0)?.due_status!!)
-        assertEquals(LocalDate.now().plusMonths(6), responseEntity.body?.get(0)?.next_change_due)
-
-        verify(exactly = 1) {
-            carItemService.getAllCarItems()
-        }
-
+        // Perform the GET request to the /carItems endpoint and validate the response
+        mockMvc.perform(get("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.last_change").value(LocalDate.now().toString()))
+            .andExpect(jsonPath("$.code").value("OIL"))
+            .andExpect(jsonPath("$.name").value("Oil change"))
+            .andExpect(jsonPath("$.replacement_frequency").value(6))
     }
 
     @Test
-    fun createCarItem() {
-        val maintenanceItem = MaintenanceItemBuilder().withCode("WATER").withReplacementFrequency(2).build()
-        val carItem = CarItemBuilder().withLastChange(LocalDate.now().plusMonths(1)).withMaintenanceItem(maintenanceItem).build()
+    fun `fetching a carItem by id when it does not exist`() {
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.getCarItemById(1)).thenThrow(EntityNotFoundException::class.java)
 
-        every { carItemService.saveCarItem(any()) } returns carItem
-
-        val responseEntity = carItemController.createCarItem(CarItemDTO.fromCarItem(carItem))
-
-        // car item assertions
-        assertEquals(HttpStatus.CREATED, responseEntity.statusCode)
-        assertFalse(responseEntity.body?.due_status!!)
-        assertEquals(LocalDate.now().plusMonths(1), responseEntity.body?.last_change)
-        assertEquals("WATER", responseEntity.body?.code)
-
-        verify(exactly = 1) {
-            carItemService.saveCarItem(any())
-        }
-
+        // Perform the GET request to the /carItems endpoint and validate the response
+        mockMvc.perform(get("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
     }
 
+    // POST /car_items
+
     @Test
-    fun getCarItemById() {
+    fun `sending a carItem body for creation and receiving a successful carItem response` () {
         val carItem = builtCarItem()
+        val carItemDTO = CarItemDTO(
+                car_id = 1,
+                code = "OIL",
+                name = "Oil change",
+                replacement_frequency = 6,
+                last_change = LocalDate.of(2021, 1, 1)
+        )
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.saveCarItem(carItemDTO.toCarItem())).thenReturn(carItem)
 
-        every { carItemService.getCarItemById(carItem.id!!) } returns carItem
+        // Perform the POST request to the /carItems endpoint and validate the response
+        mockMvc.perform(post("/car_items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(carItemDTO)))
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.last_change").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.code").value("OIL"))
+                .andExpect(jsonPath("$.name").value("Oil change"))
+                .andExpect(jsonPath("$.replacement_frequency").value(6))
+    }
 
-        // Get an existing car item by id
-        val response = carItemController.getCarItemByID(carItem.id!!)
+    // PUT /car_items/{id}
+    @Test
+    fun `sending a carItem body for update and receiving a successful carItem response`() {
+        val maintenanceItem = MaintenanceItemBuilder().withCode("WATER").withDescription("Water change").withReplacementFrequency(2).build()
+        val carItem = CarItemBuilder().withMaintenanceItem(maintenanceItem).withLastChange(LocalDate.of(2023, 1, 1)).build()
+        val carItemDTO = CarItemDTO(
+            car_id = 1,
+            code = maintenanceItem.code,
+            name = maintenanceItem.description,
+            replacement_frequency = maintenanceItem.replacementFrequency,
+            last_change = LocalDate.of(2023, 1, 1)
+        )
+        // Mock the behavior of the carService to return some dummy data
+        `when`(carItemService.updateCarItem(1L, carItemDTO.toCarItem())).thenReturn(carItem)
+
+        // Perform the PUT request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(
+            MockMvcRequestBuilders.put("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(carItemDTO)))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.last_change").value(LocalDate.of(2023, 1, 1).toString()))
+            .andExpect(jsonPath("$.code").value(maintenanceItem.code))
+            .andExpect(jsonPath("$.name").value(maintenanceItem.description))
+            .andExpect(jsonPath("$.replacement_frequency").value(maintenanceItem.replacementFrequency))
+    }
 
 
-        // Check if the response is not null and has an OK status
-        assertEquals(HttpStatus.OK, response.statusCode)
+    @Test
+    fun `sending a carItem body for update and receiving a not found response`() {
+        val carItemDTO = CarItemDTO(
+            car_id = 1,
+            code = "OIL",
+            name = "Oil change",
+            replacement_frequency = 6,
+            last_change = LocalDate.of(2021, 1, 1)
+        )
 
-        // Cast the response body to CarItemDTO
-        with(response.body!!) {
-            // Now you can access the properties of the CarItemDTO
-            assertEquals("Oil change", this.name) // from db
-            assertEquals(LocalDate.now(), this.last_change, "last change")
-            assertFalse(this.due_status)
-            assertEquals(LocalDate.now().plusMonths(6), this.next_change_due, "next change due")
-        }
+        // Mock the behavior of the carService to return a valid Car object
+        `when`(carItemService.updateCarItem(1L, carItemDTO.toCarItem())).thenThrow(EntityNotFoundException::class.java)
 
-        verify(exactly = 1) {
-            carItemService.getCarItemById(carItem.id!!)
-        }
+        // Perform the PUT request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(
+            MockMvcRequestBuilders.put("/car_items/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(carItemDTO)))
+            .andExpect(status().isNotFound)
+    }
+
+
+    // DELETE /car_items/{id}
+
+    @Test
+    fun `deleting a carItem by id when it exists`() {
+        val carItem = builtCarItem()
+        // Mock the behavior of the carItemService to return some dummy data
+        `when`(carItemService.getCarItemById(carItem.id!!)).thenReturn(carItem)
+
+        // Perform the DELETE request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/${carItem.id!!}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent)
     }
 
     @Test
-    fun updateCarItem() {
-        val carItem =  builtCarItem()
+    fun `deleting a carItem by id when it does not exist`() {
+        // Mock the behavior of the carItemService to return Not Found CarItem
+        `when`(carItemService.deleteCarItem(1L)).thenThrow(EntityNotFoundException::class.java)
 
-        every { carItemService.updateCarItem(carItem.id!!, any()) } returns carItem
-
-        carItemController.updateCarItem(carItem.id!!, CarItemDTO.fromCarItem(carItem))
-
-        verify(exactly = 1) {
-            carItemService.updateCarItem(carItem.id!!, any())
-        }
+        // Perform the DELETE request to the /car_items/{id} endpoint and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.delete("/car_items/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound)
     }
 
-    @Test
-    fun deleteCarItem() {
-        val carItem =  builtCarItem()
-        every { carItemService.deleteCarItem(carItem.id!!) } returns Unit
-
-        // delete carItem by id
-        carItemController.deleteCarItem(carItem.id!!)
-
-        verify(exactly = 1) {
-            carItemService.deleteCarItem(carItem.id!!)
-        }
+    private fun toJson(carItemDTO: CarItemDTO): String {
+        val objectMapper = ObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        return objectMapper.writeValueAsString(carItemDTO)
     }
+
 }
