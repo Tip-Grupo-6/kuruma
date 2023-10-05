@@ -2,7 +2,6 @@ package com.tip.kuruma.builders
 
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
-import com.tip.kuruma.models.MaintenanceItem
 
 class CarBuilder {
 
@@ -13,6 +12,13 @@ class CarBuilder {
     private var color: String = "white"
     private var isDeleted: Boolean = false
     private var carItems: List<CarItem>? = listOf(CarItemBuilder().build())
+
+    fun withId(id: Long?): CarBuilder {
+        if (id != null) {
+            this.id = id
+        }
+        return this
+    }
 
     fun withBrand(brand: String): CarBuilder {
         this.brand = brand
