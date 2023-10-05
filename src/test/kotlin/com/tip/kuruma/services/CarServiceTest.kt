@@ -1,148 +1,112 @@
 package com.tip.kuruma.services
 
+import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.builders.CarBuilder
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.repositories.CarRepository
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
-import org.springframework.test.annotation.Rollback
-import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
-class CarServiceTest {
-    private val carRepository: CarRepository  = mockk()
-    private val carItemService: CarItemService = mockk()
-    private val maintenanceService: MaintenanceService = mockk()
+@SpringBootTest
+class CarServiceTest  {
+    @Autowired
+    private lateinit var carRepository: CarRepository
 
-    private val carService: CarService = CarService(carRepository, carItemService, maintenanceService)
-
-    @BeforeEach
-    fun setup() {
-        clearAllMocks()
-    }
+    @Autowired
+    private lateinit var carService: CarService
 
     private fun builtCar(): Car {
-        return CarBuilder().withCarItems(null).build()
+        return CarBuilder().withCarItems(listOf()).withId(null).build()
+    }
+
+    @BeforeEach
+    fun clearDatabase() {
+        carRepository.deleteAll()
     }
 
     @Test
-    fun getAllCars() {
+    fun `fetching all cars when there is none of the available `() {
+        val foundCars = carService.getAllCars()
+        assertEquals(0, foundCars.size)
+    }
+
+    @Test
+    fun `fetching all cars when there is one of the available `() {
         val car = builtCar()
-
-        every { carRepository.findAll() } returns listOf(car)
-
-        val cars = carService.getAllCars()
-
-        // assert car info
-        assert(cars?.isNotEmpty() == true)
-        assert(cars?.get(0)?.brand == "Honda")
-        assert(cars?.get(0)?.model == "Civic")
-        assert(cars?.get(0)?.color == "white")
-
-        verify(exactly = 1) {
-            carRepository.findAll()
-        }
+        val savedCar = carService.saveCar(car)
+        val foundCars = carService.getAllCars()
+        assertEquals(1, foundCars.size)
+        assertEquals(savedCar.id, foundCars[0].id)
     }
 
     @Test
-    fun saveCar() {
-        val car = CarBuilder().withBrand("Peugeot").withModel("208").withColor("Black").withCarItems(null).build()
-        every { carRepository.save(car) } returns car
-
-        // save car using carService.saveCar
-        val createdCar = carService.saveCar(car)
-
-        // assert car info
-        assert(createdCar.brand == "Peugeot")
-        assert(createdCar.model == "208")
-        assert(createdCar.color == "Black")
-
-        verify(exactly = 1) {
-            carRepository.save(car)
-        }
-    }
-
-    @Test
-    fun getCarById() {
+    fun `fetching a car by id when it exists`() {
         val car = builtCar()
-        every { carRepository.findById(car.id!!) } returns Optional.of(car)
+        val savedCar = carService.saveCar(car)
+        val foundCar = carService.getCarById(savedCar.id!!)
+        assertEquals(savedCar.id, foundCar.id)
+    }
 
-        // get car by id
-        val carById = carService.getCarById(car.id!!)
-
-        // assert car info
-        assert(carById.brand == "Honda")
-        assert(carById.model == "Civic")
-        assert(carById.color == "white")
-
-        verify(exactly = 1) {
-            carRepository.findById(car.id!!)
+    @Test
+    fun `fetching a car by id when it does not exist`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        assertThrows(EntityNotFoundException::class.java) {
+            carService.getCarById(savedCar.id!! + 1)
         }
     }
 
     @Test
-    fun updateCar() {
-           val car = builtCar()
-
-            every { carRepository.findById(car.id!!) } returns Optional.of(car)
-
-            // update car
-            val updatedCar = car.copy(
-                brand = "Another brand",
-                year = 2023,
-                color = "Another color",
-                model = "Another model"
-            )
-
-            every { carRepository.save(updatedCar) } returns updatedCar
-
-            // update car using carService.updateCar
-            val carUpdated = carService.updateCar(car.id!!, updatedCar)
-
-            // assert updateCar new values
-            assert(carUpdated.brand == "Another brand")
-            assert(carUpdated.model == "Another model")
-            assert(carUpdated.color == "Another color")
-            assert(carUpdated.year == 2023)
-
-            verify(exactly = 1) {
-                carRepository.save(updatedCar)
-            }
-
-        }
-
-    @Test
-    fun deleteCar() {
-        var car = builtCar()
-
-        every { carRepository.findById(car.id!!) } returns Optional.of(car)
-        every { carRepository.save( car.copy(isDeleted = true)) } returns car.copy(isDeleted = true)
-
-        carService.deleteCar(car.id!!)
-
-        verify(exactly = 1) {
-            carRepository.save(car.copy(isDeleted = true))
-        }
-
+    fun `saving a car`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        // id is not null
+        assert(savedCar.id != null)
+        assertEquals(car.id, 1)
+        assertEquals(car.brand, savedCar.brand)
+        assertEquals(car.model, savedCar.model)
+        assertEquals(car.year, savedCar.year)
+        assertEquals(car.color, savedCar.color)
+        assertEquals(car.isDeleted, savedCar.isDeleted)
+        assertEquals(car.carItems, savedCar.carItems)
     }
 
     @Test
-    fun deleteAllCars() {
-        builtCar()
+    fun `deleting a car by id when it exists`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        carService.deleteCar(savedCar.id!!)
+        val deletedCar = carService.getCarById(savedCar.id!!)
+        assertEquals(true, deletedCar.isDeleted)
+    }
 
-        every { carRepository.deleteAll() } returns Unit
+    @Test
+    fun `deleting a car by id when it does not exist`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        assertThrows(EntityNotFoundException::class.java) {
+            carService.deleteCar(savedCar.id!! + 1)
+        }
+    }
 
-        carService.deleteAllCars()
+    @Test
+    fun `updating a car by id when it exists`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        val updatedCar = carService.updateCar(savedCar.id!!, car.copy(brand = "New Brand"))
+        assertEquals("New Brand", updatedCar.brand)
+    }
 
-        verify(exactly = 1) {
-            carRepository.deleteAll()
+    @Test
+    fun `updating a car by id when it does not exist`() {
+        val car = builtCar()
+        val savedCar = carService.saveCar(car)
+        assertThrows(EntityNotFoundException::class.java) {
+            carService.updateCar(savedCar.id!! + 1, car.copy(brand = "New Brand"))
         }
     }
 }
