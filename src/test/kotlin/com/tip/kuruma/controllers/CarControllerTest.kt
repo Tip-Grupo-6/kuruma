@@ -29,7 +29,7 @@ class CarControllerTest {
     private lateinit var carService: CarService
 
     private fun builtCar(): Car {
-        return CarBuilder().build()
+        return CarBuilder().withId(1L).build()
     }
 
     // GET /cars

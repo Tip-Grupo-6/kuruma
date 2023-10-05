@@ -5,7 +5,7 @@ import com.tip.kuruma.models.CarItem
 
 class CarBuilder {
 
-    private var id: Long = 1L
+    private var id: Long? = null
     private var brand: String = "Honda"
     private var model: String = "Civic"
     private var year: Int = 2023
@@ -14,9 +14,7 @@ class CarBuilder {
     private var carItems: List<CarItem>? = listOf(CarItemBuilder().build())
 
     fun withId(id: Long?): CarBuilder {
-        if (id != null) {
-            this.id = id
-        }
+        this.id = id
         return this
     }
 
