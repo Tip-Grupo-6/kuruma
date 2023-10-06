@@ -37,7 +37,6 @@ class CarServiceTest  {
     @Test
     fun `fetching all cars when there is one of the available `() {
         val car = builtCar()
-        println(car)
         val savedCar = carService.saveCar(car)
         val foundCars = carService.getAllCars()
         assertEquals(1, foundCars.size)
