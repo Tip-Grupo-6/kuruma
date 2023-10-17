@@ -1,46 +1,32 @@
 package com.tip.kuruma.controllers.car_data.v2
 
+import com.tip.kuruma.dto.car_data.CarMakeDTO
+import com.tip.kuruma.dto.car_data.CarModelDTO
+import com.tip.kuruma.dto.clients.san_cristobal.CarMakeSanCristobalDTO
+import com.tip.kuruma.dto.clients.san_cristobal.CarModelSanCristobalDTO
+import com.tip.kuruma.services.CarDataService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.client.RestTemplate
 
 @RestController
 @RequestMapping("/v2/car_data")
-class CarDataV2Controller {
-
-    // Define the external API URL
-    private val externalApiUrl = "https://api.sancristobal.com.ar/marketing-marketing/api/InfoAuto"
-
-    // Create a RestTemplate instance to make HTTP requests
-    private val restTemplate = RestTemplate()
+class CarDataV2Controller(
+        @Autowired
+        @Qualifier("carDataServiceSanCristobal")
+        private val carDataService: CarDataService<CarMakeSanCristobalDTO, CarModelSanCristobalDTO>
+) {
 
     @GetMapping("/makes")
-    fun getCarMakes(@RequestParam("year") year: Int): String {
-        return try {
-            // Make an HTTP GET request to the external API
-            val response = restTemplate.getForObject("$externalApiUrl/brands-highlight-by-year-and-portal-category?year=${year.toString()}&portalCategory=A", String::class.java)
-
-            response?.substringAfter("brands\":")?.dropLast(1) ?: "Failed to fetch car makes data from the external API."
-        } catch (ex: Exception) {
-            // Handle any exceptions that may occur during the HTTP request
-            "An error occurred: ${ex.message}"
-        }
+    fun getCarMakes(@RequestParam("year") year: Int): List<CarMakeDTO>? {
+        return carDataService.getCarMakes(year)
     }
 
     @GetMapping("/models")
-    fun getCarModels(@RequestParam("makeId") makeId: Int, @RequestParam("year") year: Int): String {
-
-        return try {
-            // Make an HTTP GET request to the external API
-            val response = restTemplate.getForObject("$externalApiUrl/model-by-brand-year-and-portal-category?year=${year.toString()}&portalCategory=A&brandId=${makeId.toString()}", String::class.java)
-
-            response?.substringAfter("models\":")?.dropLast(1) ?: // Handle the case where the response is null
-            "Failed to fetch car models data from the external API."
-        } catch (ex: Exception) {
-            // Handle any exceptions that may occur during the HTTP request
-            "An error occurred: ${ex.message}"
-        }
+    fun getCarModels(@RequestParam("year") year: Int, @RequestParam("make_id") makeId: Int): List<CarModelDTO>? {
+        return carDataService.getCarModel(year, makeId)
     }
 }
