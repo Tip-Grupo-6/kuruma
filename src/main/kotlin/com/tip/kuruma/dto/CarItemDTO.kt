@@ -52,13 +52,12 @@ data class CarItemDTO(
     }
 
     fun getCarItemStatusColor(carItemDTO: CarItemDTO): String {
-        // red status is when car item is due, green is when it's not due yet, and yellow is when it's due in the current month
         return when {
             carItemDTO.due_status -> "red"
             carItemDTO.next_change_due?.month == LocalDate.now().month -> "yellow"
             // green should have due status false and next_change_due month should be after current month
             carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! -> "green"
-            else -> "unknown"
+            else -> "green"
         }
     }
 }
