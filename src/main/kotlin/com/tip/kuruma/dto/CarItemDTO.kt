@@ -13,7 +13,8 @@ data class CarItemDTO(
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
     var due_status: Boolean = false,
-    var is_deleted: Boolean? = false
+    var is_deleted: Boolean? = false,
+    var status_color: String? = null
 ) {
     companion object {
         fun fromCarItem(carItem: CarItem): CarItemDTO {
@@ -30,6 +31,7 @@ data class CarItemDTO(
                 val nextChangeDue = carItem.lastChange.plusMonths(it.toLong())
                 carItemDTO.next_change_due = nextChangeDue
                 carItemDTO.due_status = nextChangeDue.isBefore(LocalDate.now())
+                carItemDTO.status_color = carItemDTO.getCarItemStatusColor(carItemDTO)
             }
             return  carItemDTO
         }
@@ -47,5 +49,16 @@ data class CarItemDTO(
                 lastChange = this.last_change ?: LocalDate.now(),
                 isDeleted = this.is_deleted
         )
+    }
+
+    fun getCarItemStatusColor(carItemDTO: CarItemDTO): String {
+        // red status is when car item is due, green is when it's not due yet, and yellow is when it's due in the current month
+        return when {
+            carItemDTO.due_status -> "red"
+            carItemDTO.next_change_due?.month == LocalDate.now().month -> "yellow"
+            // green should have due status false and next_change_due month should be after current month
+            carItemDTO.next_change_due?.isAfter(LocalDate.now())!! -> "green"
+            else -> "unknown"
+        }
     }
 }

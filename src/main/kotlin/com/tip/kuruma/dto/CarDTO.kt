@@ -12,7 +12,6 @@ data class CarDTO(
     var image: String? = null,
     var is_deleted: Boolean? = false,
     val maintenance_values: List<CarItemDTO>? = null,
-    var status_color: String? = null
 
 ) {
     companion object {
@@ -28,7 +27,6 @@ data class CarDTO(
                 is_deleted = car.isDeleted,
                 maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) }
             )
-            carDTO.status_color = carDTO.maintenance_values?.let { carDTO.getCarStatusColor(it) }
 
 
             return carDTO
@@ -36,17 +34,6 @@ data class CarDTO(
 
         fun fromCars(cars: List<Car>): List<CarDTO> {
             return cars.map { fromCar(it) }
-        }
-    }
-
-    fun getCarStatusColor(carItems: List<CarItemDTO>): String {
-        return when {
-            // all carItem due status are true
-            carItems.all { it.due_status }-> "red"
-            // at least one carItem due status is true
-            carItems.any { it.due_status} -> "yellow"
-            // all carItem due status are false
-            else -> "green"
         }
     }
 
