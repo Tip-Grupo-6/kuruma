@@ -57,7 +57,7 @@ data class CarItemDTO(
             carItemDTO.due_status -> "red"
             carItemDTO.next_change_due?.month == LocalDate.now().month -> "yellow"
             // green should have due status false and next_change_due month should be after current month
-            carItemDTO.next_change_due?.isAfter(LocalDate.now())!! -> "green"
+            carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! -> "green"
             else -> "unknown"
         }
     }
