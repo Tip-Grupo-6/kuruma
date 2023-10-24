@@ -1,13 +1,14 @@
 package com.tip.kuruma.services
 
 import com.tip.kuruma.client.CarDataClientInterface
+import com.tip.kuruma.dto.car_data.CarDetailDTO
 import com.tip.kuruma.dto.car_data.CarMakeDTO
 import com.tip.kuruma.dto.car_data.CarModelDTO
 import com.tip.kuruma.mapper.CarDataMapperInterface
 
 class CarDataService<T, S>(
-        private val client: CarDataClientInterface<T, S>,
-        private val mapper: CarDataMapperInterface<T, S>
+        private val client: CarDataClientInterface<T, S, Any>,
+        private val mapper: CarDataMapperInterface<T, S, Any>
 ) {
 
     fun getCarMakes(year: Int): List<CarMakeDTO>? {
@@ -16,7 +17,12 @@ class CarDataService<T, S>(
     }
 
     fun getCarModel(year: Int, makeId: Int): List<CarModelDTO>? {
-        val carMakes = client.getCarModel(year, makeId)
-        return mapper.mapToCarModelDTO(carMakes)
+        val carModels = client.getCarModel(year, makeId)
+        return mapper.mapToCarModelDTO(carModels)
+    }
+
+    fun getCarModelDetails(year: Int, makeId: Int, modelId: Int): List<CarDetailDTO>? {
+        val carDetails = client.getCarModelDetails(year, makeId, modelId)
+        return mapper.mapToCarDetailDTO(carDetails)
     }
 }
