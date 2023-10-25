@@ -6,7 +6,7 @@ import com.tip.kuruma.dto.clients.san_cristobal.CarModelDetailSanCristobalDTO
 import org.slf4j.LoggerFactory
 import org.springframework.web.client.RestTemplate
 
-class CarApiClient: CarDataClientInterface<CarApiListBrandDTO, CarApiListModelDTO, Any> {
+class CarApiClient: CarDataClientInterface<CarApiListBrandDTO, CarApiListModelDTO> {
 
     // Define the external API URL
     private val externalApiUrl = "https://carapi.app/api"

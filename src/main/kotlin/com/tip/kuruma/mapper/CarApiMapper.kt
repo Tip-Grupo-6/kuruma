@@ -5,8 +5,9 @@ import com.tip.kuruma.dto.car_data.CarMakeDTO
 import com.tip.kuruma.dto.car_data.CarModelDTO
 import com.tip.kuruma.dto.clients.car_api.CarApiListBrandDTO
 import com.tip.kuruma.dto.clients.car_api.CarApiListModelDTO
+import com.tip.kuruma.dto.clients.san_cristobal.CarModelDetailSanCristobalDTO
 
-class CarApiMapper: CarDataMapperInterface<CarApiListBrandDTO, CarApiListModelDTO, Any> {
+class CarApiMapper: CarDataMapperInterface<CarApiListBrandDTO, CarApiListModelDTO> {
 
     override fun mapToCarMakeDTO(response: CarApiListBrandDTO?): List<CarMakeDTO>? {
         return response?.data?.map {
@@ -20,7 +21,7 @@ class CarApiMapper: CarDataMapperInterface<CarApiListBrandDTO, CarApiListModelDT
         }
     }
 
-    override fun mapToCarDetailDTO(response: Any): List<CarDetailDTO>? {
+    override fun mapToCarDetailDTO(response: CarModelDetailSanCristobalDTO): List<CarDetailDTO>? {
         TODO("Not yet implemented")
     }
 }

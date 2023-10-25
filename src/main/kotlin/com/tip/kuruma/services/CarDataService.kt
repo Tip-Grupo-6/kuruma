@@ -7,8 +7,8 @@ import com.tip.kuruma.dto.car_data.CarModelDTO
 import com.tip.kuruma.mapper.CarDataMapperInterface
 
 class CarDataService<T, S>(
-        private val client: CarDataClientInterface<T, S, Any>,
-        private val mapper: CarDataMapperInterface<T, S, Any>
+        private val client: CarDataClientInterface<T, S>,
+        private val mapper: CarDataMapperInterface<T, S>
 ) {
 
     fun getCarMakes(year: Int): List<CarMakeDTO>? {

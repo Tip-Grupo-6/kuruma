@@ -6,7 +6,7 @@ import com.tip.kuruma.dto.clients.san_cristobal.CarModelSanCristobalDTO
 import org.slf4j.LoggerFactory
 import org.springframework.web.client.RestTemplate
 
-class SanCristobalClient: CarDataClientInterface<CarMakeSanCristobalDTO, CarModelSanCristobalDTO, CarModelDetailSanCristobalDTO> {
+class SanCristobalClient: CarDataClientInterface<CarMakeSanCristobalDTO, CarModelSanCristobalDTO> {
 
     private val restTemplate = RestTemplate()
     private val externalApiUrl = "https://api.sancristobal.com.ar/marketing-marketing/api/InfoAuto"

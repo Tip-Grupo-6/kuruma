@@ -8,7 +8,7 @@ import com.tip.kuruma.dto.clients.san_cristobal.CarModelDetailSanCristobalDTO
 import com.tip.kuruma.dto.clients.san_cristobal.CarModelSanCristobalDTO
 
 
-class SanCristobalMapper: CarDataMapperInterface<CarMakeSanCristobalDTO, CarModelSanCristobalDTO, CarModelDetailSanCristobalDTO> {
+class SanCristobalMapper: CarDataMapperInterface<CarMakeSanCristobalDTO, CarModelSanCristobalDTO> {
 
     override fun mapToCarMakeDTO(response: CarMakeSanCristobalDTO?): List<CarMakeDTO>? {
         return response?.brands?.map {
