@@ -2,6 +2,7 @@ package com.tip.kuruma.client
 
 import com.tip.kuruma.dto.clients.car_api.CarApiListBrandDTO
 import com.tip.kuruma.dto.clients.car_api.CarApiListModelDTO
+import com.tip.kuruma.dto.clients.san_cristobal.CarModelDetailSanCristobalDTO
 import org.slf4j.LoggerFactory
 import org.springframework.web.client.RestTemplate
 
@@ -38,5 +39,9 @@ class CarApiClient: CarDataClientInterface<CarApiListBrandDTO, CarApiListModelDT
             LOGGER.error("An error occurred: ${ex.message}")
             throw RuntimeException("An error occurred: ${ex.message}")
         }
+    }
+
+    override fun getCarModelDetails(year: Int, makeId: Int, modelId: Int): CarModelDetailSanCristobalDTO {
+        TODO("Not yet implemented")
     }
 }
