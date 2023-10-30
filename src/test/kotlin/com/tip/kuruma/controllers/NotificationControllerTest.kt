@@ -52,14 +52,6 @@ class NotificationControllerTest {
     fun deleteNotification() {
     }
 
-    private fun createAndSaveNotification(car: Car): Notification = Notification(
-        car = car,
-        oilMessage = "Oil change is due",
-        waterMessage = "Water change is due",
-        tirePressureMessage = "Tire pressure is low",
-        isDeleted = false
-    )
-
     private fun createAnyCar(): Car = Car(
         brand = "Honda",
         model = "Civic",
