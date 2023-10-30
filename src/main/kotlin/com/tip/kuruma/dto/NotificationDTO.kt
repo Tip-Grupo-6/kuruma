@@ -1,35 +1,43 @@
 package com.tip.kuruma.dto
 
 import com.tip.kuruma.models.Notification
+import com.tip.kuruma.services.CarService
+import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 data class NotificationDTO(
-    var car : CarDTO? = null,
+    var car_id : Long? = null,
     var is_deleted : Boolean? = false,
     var maintenance_messages: Map<String, Any>? = null
+
 ) {
     companion object {
-        fun fromNotification(notification: Notification): NotificationDTO {
+        fun fromNotification(notification: Notification, carService: CarService): NotificationDTO {
+            val car = carService.getCarById(notification.carId!!)
+            val carItems = car.carItems
+
             val notificationDTO = NotificationDTO(
-                car = notification.car?.let { CarDTO.fromCar(it) },
+                car_id = notification.carId,
                 is_deleted = notification.isDeleted
             )
-            notificationDTO.maintenance_messages = notificationDTO.generateMaintenanceMessages(CarItemDTO.fromCarItems(
-                notification.car?.carItems
-            ))
+
+            notificationDTO.maintenance_messages = notificationDTO.generateMaintenanceMessages(
+                CarItemDTO.fromCarItems(carItems)
+            )
+
             return notificationDTO
         }
 
-        fun fromNotifications(notifications: List<Notification>): List<NotificationDTO> {
-            return notifications.map { fromNotification(it) }
+        fun fromNotifications(notifications: List<Notification>, carService: CarService): List<NotificationDTO> {
+            return notifications.map { fromNotification(it, carService) }
         }
 
     }
 
     fun toNotification(): Notification {
         return Notification(
-            car = this.car?.toCar(),
+            carId = this.car_id,
             isDeleted = this.is_deleted
         )
     }
@@ -46,17 +54,17 @@ data class NotificationDTO(
     }
     fun maintenanceMessage(carItem: CarItemDTO): String {
         val carItemName = carItem.name
-        var adviceMessage: String = "$carItemName is up to date";
-        val ChangeDueDate = carItem.next_change_due
-        val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), ChangeDueDate)
-        if (daysUntilDue in 0..30) {
-            adviceMessage = "Change $carItemName within $daysUntilDue days"
-        }
-        else if (daysUntilDue < 0) {
-            adviceMessage = "$carItemName change is overdue"
-        }
+        val changeDueDate = carItem.next_change_due
+        val currentDate = LocalDate.now()
+        val daysUntilDue = ChronoUnit.DAYS.between(currentDate, changeDueDate)
 
-        return adviceMessage
+        return when {
+            daysUntilDue <= 0 -> "Tu cambio de $carItemName está atrasado. Cambiá tu $carItemName lo antes posible."
+            daysUntilDue <= 7 -> "Esta semana es la fecha de vencimiento del cambio de $carItemName."
+            daysUntilDue <= 15 -> "Faltan 15 días para la fecha de vencimiento del cambio de $carItemName."
+            daysUntilDue <= 30 -> "Este mes es la fecha de vencimiento del cambio de $carItemName."
+            else -> "Tu $carItemName está al día."
+        }
     }
 
 }

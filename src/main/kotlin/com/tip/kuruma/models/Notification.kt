@@ -8,12 +8,7 @@ data class Notification(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
-    var oilMessage: String? = null,
-    var waterMessage: String? = null,
-    var tirePressureMessage: String? = null,
-
-    @ManyToOne(fetch = FetchType.LAZY) // Many notifications can be associated with one car
-    @JoinColumn(name = "car_id")
-    var car: Car? = null,
+    @Column(name = "car_id")
+    var carId: Long? = null,
     var isDeleted: Boolean? = false
 )

@@ -33,3 +33,10 @@ create table car_item(
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id),
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
+create table notification(
+    id INT GENERATED ALWAYS AS IDENTITY,
+    car_id INT NOT NULL,
+    is_deleted boolean,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_car_item FOREIGN KEY(car_id) REFERENCES car_item(id)
+);
