@@ -12,19 +12,17 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/notifications")
 class NotificationController @Autowired constructor(
     private val notificationService: NotificationService,
-    private val carService: CarService // Add CarService as a dependency
+    private val carService: CarService
 ) {
     @GetMapping
     fun getAllNotifications(): ResponseEntity<List<NotificationDTO>> {
         val notifications = notificationService.getAllNotifications()
 
-        // Pass the carService as an argument to fromNotifications
         return ResponseEntity.ok(NotificationDTO.fromNotifications(notifications, carService))
     }
 
     @PostMapping
     fun createNotification(@RequestBody notificationDTO: NotificationDTO): ResponseEntity<NotificationDTO> {
-        // Pass the carService as an argument to fromNotification
         val savedNotification = notificationService.saveNotification(notificationDTO.toNotification())
         return ResponseEntity.status(201).body(NotificationDTO.fromNotification(savedNotification, carService))
     }
@@ -33,7 +31,6 @@ class NotificationController @Autowired constructor(
     fun getNotificationById(@PathVariable id: Long): ResponseEntity<NotificationDTO> {
         val notification = notificationService.getNotificationById(id)
         return if (notification != null) {
-            // Pass the carService as an argument to fromNotification
             ResponseEntity.ok(NotificationDTO.fromNotification(notification, carService))
         } else {
             ResponseEntity.notFound().build()
