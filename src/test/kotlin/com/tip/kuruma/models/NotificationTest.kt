@@ -7,25 +7,14 @@ class NotificationTest {
     @Test
     fun testNotification() {
         val notification = Notification(
-            car = Car(
-                brand = "Toyota",
-                model = "Corolla",
-                year = 2015,
-                color = "Red",
-                image = "toyota_corolla.jpg"
-            ),
-            isDeleted = false,
-            oilMessage = "Oil change is due within this month",
-            waterMessage = "Water check is due within this month",
-            tirePressureMessage = "Tire pressure check is due within this month"
+            id = 1,
+            carId = 1,
+            isDeleted = false
         )
-        assertEquals("Toyota", notification.car?.brand)
+
+        assertEquals(1, notification.id)
+        assertEquals(1, notification.carId)
         assertEquals(false, notification.isDeleted)
-        assertEquals("Oil change is due within this month", notification.oilMessage)
-        assertEquals("Water check is due within this month", notification.waterMessage)
-        assertEquals("Tire pressure check is due within this month", notification.tirePressureMessage)
-
-
 
     }
 }
