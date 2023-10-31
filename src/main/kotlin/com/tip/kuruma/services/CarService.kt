@@ -4,6 +4,7 @@ import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.repositories.CarRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -58,7 +59,8 @@ class CarService @Autowired constructor(
                 model = car.model,
                 year = car.year,
                 color = car.color,
-                image = car.image
+                image = car.image,
+                kilometers = car.kilometers
         )
         return carRepository.save(updatedCar).let { carUpdated ->
             LOGGER.info("Car with id $id has been updated")
@@ -67,5 +69,22 @@ class CarService @Autowired constructor(
             }
             carUpdated.copy(carItems = updateCarItems)
         }
+    }
+
+    @Transactional
+    fun patchCar(id: Long, patchCar: Car): Car {
+        val existingCar = this.getCarById(id)
+        val updatedCar = existingCar.copy(
+            brand = patchCar.brand ?: existingCar.brand,
+            model = patchCar.model ?: existingCar.model,
+            year = patchCar.year ?: existingCar.year,
+            color = patchCar.color ?: existingCar.color,
+            image = patchCar.image ?: existingCar.image,
+            kilometers = patchCar.kilometers ?: existingCar.kilometers
+        )
+
+        LOGGER.info("Car with id $id has been patched")
+
+        return updatedCar
     }
 }

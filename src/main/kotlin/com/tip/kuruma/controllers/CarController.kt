@@ -47,6 +47,13 @@ class CarController @Autowired constructor(
         return ResponseEntity.ok(CarDTO.fromCar(car))
     }
 
+    @PatchMapping("/{id}")
+    fun patchCar(@PathVariable id: Long, @RequestBody partialCarDTO: CarDTO): ResponseEntity<CarDTO> {
+        LOGGER.info("Calling to PATCH /cars/$id with request $partialCarDTO")
+        val updatedCar = carService.patchCar(id, partialCarDTO.toCar())
+        return ResponseEntity.ok(CarDTO.fromCar(updatedCar))
+    }
+
     @DeleteMapping("/{id}")
     fun deleteCar(@PathVariable id: Long): ResponseEntity<Unit> {
         LOGGER.info("Calling to DELETE /cars/$id")

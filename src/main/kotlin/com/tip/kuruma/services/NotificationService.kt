@@ -17,12 +17,4 @@ class NotificationService @Autowired constructor(
     fun getNotificationById(id: Long): Notification? = notificationRepository.findById(id).orElseThrow { EntityNotFoundException("Notification with id $id not found") }
 
     fun deleteNotification(id: Long) = notificationRepository.deleteById(id)
-
-    fun updateNotification(id: Long, notification: Notification): Notification {
-        val notificationToUpdate = notificationRepository.findById(id).orElseThrow { EntityNotFoundException("Notification with id $id not found") }
-        notificationToUpdate?.oilMessage = notification.oilMessage
-        notificationToUpdate?.waterMessage = notification.waterMessage
-        notificationToUpdate?.tirePressureMessage = notification.tirePressureMessage
-        return notificationRepository.save(notificationToUpdate!!)
-    }
 }
