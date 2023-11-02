@@ -2,6 +2,7 @@ package com.tip.kuruma.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.Where
+import java.time.LocalDate
 
 @Entity
 @Table(name = "car")
@@ -19,7 +20,9 @@ data class Car(
     val isDeleted: Boolean? = false,
     @OneToMany(mappedBy = "carId", fetch = FetchType.EAGER)
     @Where(clause = "is_deleted = false")
-    val carItems: List<CarItem>? = null
+    val carItems: List<CarItem>? = null,
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()
 ) {
 
     fun getName(): String {

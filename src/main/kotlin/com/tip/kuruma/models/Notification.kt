@@ -1,6 +1,7 @@
 package com.tip.kuruma.models
 
 import jakarta.persistence.*
+import java.time.LocalDate
 
 @Entity
 @Table(name = "notification")
@@ -10,5 +11,11 @@ data class Notification(
     var id: Long? = null,
     @Column(name = "car_id")
     var carId: Long? = null,
-    var isDeleted: Boolean? = false
+    @Column(name = "car_item_id")
+    var carItemId: Long? = null,
+    var frequency: Int? = null,
+    var message: String? = null,
+    var isDeleted: Boolean? = false,
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()
 )

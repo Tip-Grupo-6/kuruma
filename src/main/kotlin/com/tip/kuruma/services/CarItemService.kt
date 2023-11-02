@@ -5,6 +5,7 @@ import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.repositories.CarItemRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class CarItemService(
@@ -34,7 +35,7 @@ class CarItemService(
 
     fun updateCarItem(id: Long, carItem: CarItem): CarItem {
         val carItemToUpdate = getCarItemById(id)
-        return carItemRepository.save(carItemToUpdate.copy(lastChange = carItem.lastChange)).also {
+        return carItemRepository.save(carItemToUpdate.copy(lastChange = carItem.lastChange, updated_at = LocalDate.now())).also {
             LOGGER.info("Car Item with id $id has been updated")
         }
     }

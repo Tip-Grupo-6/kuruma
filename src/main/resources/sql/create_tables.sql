@@ -12,6 +12,7 @@ create table car(
     kilometers varchar(256),
     is_deleted boolean,
     created_at date,
+    updated_at date,
     PRIMARY KEY(id)
 );
 
@@ -21,6 +22,7 @@ create table maintenance_item(
      description varchar(256) NOT NULL,
      replacement_frequency INT NOT NULL,
      created_at date,
+     updated_at date,
      PRIMARY KEY(id),
      UNIQUE (code)
 );
@@ -32,15 +34,21 @@ create table car_item(
     last_change date,
     is_deleted boolean,
     created_at date,
+    updated_at date,
     PRIMARY KEY(id),
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id),
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
 create table notification(
     id INT GENERATED ALWAYS AS IDENTITY,
+    car_item_id INT NOT NULL,
     car_id INT NOT NULL,
+    frequency INT NOT NULL,
+    message varchar(256) NOT NULL,
     is_deleted boolean,
     created_at date,
+    updated_at date,
     PRIMARY KEY(id),
-    CONSTRAINT fk_car_item FOREIGN KEY(car_id) REFERENCES car_item(id)
+    CONSTRAINT fk_car_item FOREIGN KEY(car_item_id) REFERENCES car_item(id),
+    CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );

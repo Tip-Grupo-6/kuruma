@@ -1,6 +1,8 @@
 package com.tip.kuruma.dto
 
+import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.models.Notification
+import com.tip.kuruma.services.CarItemService
 import com.tip.kuruma.services.CarService
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
@@ -8,28 +10,33 @@ import java.time.temporal.ChronoUnit
 
 data class NotificationDTO(
     var car_id : Long? = null,
+    var car_item_id: Long? = null,
+    var frequency: Int? = null,
+    var message: String? = null,
     var is_deleted : Boolean? = false,
-    var maintenance_messages: Map<String, Any>? = null
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()
 
 ) {
     companion object {
-        fun fromNotification(notification: Notification, carService: CarService): NotificationDTO {
-            val car = carService.getCarById(notification.carId!!)
-            val carItems = car.carItems
+        fun fromNotification(notification: Notification, carItemService: CarItemService): NotificationDTO {
+            val carItem = carItemService.getCarItemById(notification.carItemId!!)
 
             val notificationDTO = NotificationDTO(
                 car_id = notification.carId,
-                is_deleted = notification.isDeleted
+                car_item_id = notification.carItemId,
+                frequency = notification.frequency,
+                is_deleted = notification.isDeleted,
+                created_at = notification.created_at,
+                updated_at = notification.updated_at
             )
 
-            notificationDTO.maintenance_messages = notificationDTO.generateMaintenanceMessages(
-                CarItemDTO.fromCarItems(carItems)
-            )
+            notificationDTO.message =  notificationDTO.maintenanceMessage(CarItemDTO.fromCarItem(carItem))
 
             return notificationDTO
         }
 
-        fun fromNotifications(notifications: List<Notification>, carService: CarService): List<NotificationDTO> {
+        fun fromNotifications(notifications: List<Notification>, carService: CarItemService): List<NotificationDTO> {
             return notifications.map { fromNotification(it, carService) }
         }
 
@@ -38,20 +45,15 @@ data class NotificationDTO(
     fun toNotification(): Notification {
         return Notification(
             carId = this.car_id,
-            isDeleted = this.is_deleted
+            carItemId = this.car_item_id,
+            frequency = this.frequency,
+            message = this.message,
+            isDeleted = this.is_deleted,
+            created_at = this.created_at,
+            updated_at = this.updated_at
         )
     }
 
-    private fun generateMaintenanceMessages(carItems: List<CarItemDTO>?): Map<String, String> {
-        val maintenanceMessages = mutableMapOf<String, String>()
-
-        carItems?.forEach { carItem ->
-            val maintenanceMessage = maintenanceMessage(carItem)
-            maintenanceMessages[carItem.name ?: "Unknown"] = maintenanceMessage
-        }
-
-        return maintenanceMessages
-    }
     fun maintenanceMessage(carItem: CarItemDTO): String {
         val carItemName = carItem.name
         val changeDueDate = carItem.next_change_due

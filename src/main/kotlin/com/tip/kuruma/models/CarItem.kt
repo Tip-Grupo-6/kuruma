@@ -17,7 +17,9 @@ data class CarItem(
     @Column(name = "last_change")
     var lastChange: LocalDate = LocalDate.now(),
     @Column(name = "is_deleted")
-    var isDeleted: Boolean? = false){
+    var isDeleted: Boolean? = false,
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()){
 
     override fun toString(): String {
         return "CarItem(id=$id, car_id=$carId, last_change=$lastChange, maintenance_item_id=$maintenanceItem)"
