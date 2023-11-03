@@ -14,7 +14,9 @@ data class CarDTO(
     var image: String? = null,
     var is_deleted: Boolean? = false,
     val maintenance_values: List<CarItemDTO>? = null,
-    var maintenance_messages: Map<String, Any>? = null
+    var maintenance_messages: Map<String, Any>? = null,
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()
 
 ) {
     companion object {
@@ -29,6 +31,8 @@ data class CarDTO(
                 kilometers = car.kilometers,
                 is_deleted = car.isDeleted,
                 maintenance_values = car.carItems?.let { CarItemDTO.fromCarItems(it) },
+                created_at = car.created_at,
+                updated_at = car.updated_at
             )
             carDTO.maintenance_messages = carDTO.generateMaintenanceMessages(
                 CarItemDTO.fromCarItems(car.carItems)
@@ -54,7 +58,11 @@ data class CarDTO(
             kilometers = this.kilometers,
             carItems = this.maintenance_values?.map {
                 it.toCarItem()
-            }
+            },
+            isDeleted = this.is_deleted,
+            created_at = this.created_at,
+            updated_at = this.updated_at
+
         )
     }
 

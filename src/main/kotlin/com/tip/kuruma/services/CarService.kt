@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class CarService @Autowired constructor(
@@ -60,7 +61,8 @@ class CarService @Autowired constructor(
                 year = car.year,
                 color = car.color,
                 image = car.image,
-                kilometers = car.kilometers
+                kilometers = car.kilometers,
+                updated_at = LocalDate.now()
         )
         return carRepository.save(updatedCar).let { carUpdated ->
             LOGGER.info("Car with id $id has been updated")
@@ -80,7 +82,8 @@ class CarService @Autowired constructor(
             year = patchCar.year ?: existingCar.year,
             color = patchCar.color ?: existingCar.color,
             image = patchCar.image ?: existingCar.image,
-            kilometers = patchCar.kilometers ?: existingCar.kilometers
+            kilometers = patchCar.kilometers ?: existingCar.kilometers,
+            updated_at = LocalDate.now()
         )
 
         LOGGER.info("Car with id $id has been patched")

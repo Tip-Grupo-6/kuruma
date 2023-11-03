@@ -14,7 +14,9 @@ data class CarItemDTO(
     var next_change_due: LocalDate? = null,
     var due_status: Boolean = false,
     var is_deleted: Boolean? = false,
-    var status_color: String? = null
+    var status_color: String? = null,
+    var created_at: LocalDate? = LocalDate.now(),
+    var updated_at: LocalDate? = LocalDate.now()
 ) {
     companion object {
         fun fromCarItem(carItem: CarItem): CarItemDTO {
@@ -25,7 +27,9 @@ data class CarItemDTO(
                 name = carItem.maintenanceItem?.description,
                 replacement_frequency = carItem.maintenanceItem?.replacementFrequency,
                 is_deleted = carItem.isDeleted,
-                last_change = carItem.lastChange
+                last_change = carItem.lastChange,
+                created_at = carItem.created_at,
+                updated_at = carItem.updated_at
             )
             carItem.maintenanceItem?.replacementFrequency?.let {
                 val nextChangeDue = carItem.lastChange.plusMonths(it.toLong())
@@ -47,7 +51,9 @@ data class CarItemDTO(
                 carId = this.car_id,
                 maintenanceItem = MaintenanceItem(code = this.code, description = this.name, replacementFrequency = this.replacement_frequency),
                 lastChange = this.last_change ?: LocalDate.now(),
-                isDeleted = this.is_deleted
+                isDeleted = this.is_deleted,
+                created_at = this.created_at,
+                updated_at = this.updated_at
         )
     }
 
