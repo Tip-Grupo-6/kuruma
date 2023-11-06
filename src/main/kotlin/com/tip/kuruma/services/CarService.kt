@@ -88,6 +88,6 @@ class CarService @Autowired constructor(
 
         LOGGER.info("Car with id $id has been patched")
 
-        return updatedCar
+        return carRepository.save(updatedCar)
     }
 }

@@ -1,14 +1,12 @@
 package com.tip.kuruma.dto
 
-import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.models.Notification
 import com.tip.kuruma.services.CarItemService
-import com.tip.kuruma.services.CarService
-import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 data class NotificationDTO(
+    var id: Long? = null,
     var car_id : Long? = null,
     var car_item_id: Long? = null,
     var frequency: Int? = null,
@@ -19,25 +17,21 @@ data class NotificationDTO(
 
 ) {
     companion object {
-        fun fromNotification(notification: Notification, carItemService: CarItemService): NotificationDTO {
-            val carItem = carItemService.getCarItemById(notification.carItemId!!)
-
-            val notificationDTO = NotificationDTO(
+        fun fromNotification(notification: Notification): NotificationDTO {
+            return NotificationDTO(
+                id = notification.id,
                 car_id = notification.carId,
                 car_item_id = notification.carItemId,
                 frequency = notification.frequency,
+                message = notification.message,
                 is_deleted = notification.isDeleted,
                 created_at = notification.created_at,
                 updated_at = notification.updated_at
             )
-
-            notificationDTO.message =  notificationDTO.maintenanceMessage(CarItemDTO.fromCarItem(carItem))
-
-            return notificationDTO
         }
 
-        fun fromNotifications(notifications: List<Notification>, carService: CarItemService): List<NotificationDTO> {
-            return notifications.map { fromNotification(it, carService) }
+        fun fromNotifications(notifications: List<Notification>): List<NotificationDTO> {
+            return notifications.map { fromNotification(it) }
         }
 
     }
