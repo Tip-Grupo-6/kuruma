@@ -21,7 +21,7 @@ class NotificationService @Autowired constructor(
         val notificationToUpdate = getNotificationById(id)
         notificationToUpdate.let {
             it.carId = notification.carId
-            it.carItemId = notification.carItemId
+            it.maintenanceItemId = notification.maintenanceItemId
             it.frequency = notification.frequency
             it.message = notification.message
             it.isDeleted = notification.isDeleted
@@ -34,7 +34,7 @@ class NotificationService @Autowired constructor(
         val notificationToUpdate = getNotificationById(id)
         notificationToUpdate.let {
             it.carId = notification.carId ?: it.carId
-            it.carItemId = notification.carItemId ?: it.carItemId
+            it.maintenanceItemId = notification.maintenanceItemId ?: it.maintenanceItemId
             it.frequency = notification.frequency ?: it.frequency
             it.message = notification.message ?: it.message
             it.isDeleted = notification.isDeleted ?: it.isDeleted

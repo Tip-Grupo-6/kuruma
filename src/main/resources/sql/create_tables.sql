@@ -41,7 +41,7 @@ create table car_item(
 );
 create table notification(
     id INT GENERATED ALWAYS AS IDENTITY,
-    car_item_id INT NOT NULL,
+    maintenance_item_id INT NOT NULL,
     car_id INT NOT NULL,
     frequency INT NOT NULL,
     message varchar(256) NOT NULL,
@@ -49,6 +49,6 @@ create table notification(
     created_at date,
     updated_at date,
     PRIMARY KEY(id),
-    CONSTRAINT fk_car_item FOREIGN KEY(car_item_id) REFERENCES car_item(id),
+    CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id),
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );

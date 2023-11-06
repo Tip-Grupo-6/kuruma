@@ -11,8 +11,8 @@ data class Notification(
     var id: Long? = null,
     @Column(name = "car_id")
     var carId: Long? = null,
-    @Column(name = "car_item_id")
-    var carItemId: Long? = null,
+    @Column(name = "maintenance_item_id")
+    var maintenanceItemId: Long? = null,
     var frequency: Int? = null,
     var message: String? = null,
     var isDeleted: Boolean? = false,
