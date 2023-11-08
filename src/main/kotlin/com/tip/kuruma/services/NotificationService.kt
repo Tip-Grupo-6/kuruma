@@ -13,6 +13,8 @@ class NotificationService @Autowired constructor(
 ) {
     fun getAllNotifications(): List<Notification> = notificationRepository.findAllByIsDeletedIsFalse()
 
+    fun getAllNotificationsByCarId(carId: Long): List<Notification> = notificationRepository.findAllByCarIdAndIsDeletedIsFalse(carId)
+
     fun saveNotification(notification: Notification): Notification = notificationRepository.save(notification)
 
     fun getNotificationById(id: Long): Notification = notificationRepository.findById(id).orElseThrow { EntityNotFoundException("Notification with id $id not found") }
