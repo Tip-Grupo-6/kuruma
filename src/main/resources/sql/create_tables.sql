@@ -52,3 +52,14 @@ create table notification(
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id),
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );
+create table users(
+    id INT GENERATED ALWAYS AS IDENTITY,
+    name varchar(256) NOT NULL,
+    email varchar(256) NOT NULL,
+    password varchar(256) NOT NULL,
+    is_deleted boolean,
+    created_at date,
+    updated_at date,
+    PRIMARY KEY(id),
+    UNIQUE (email)
+);
