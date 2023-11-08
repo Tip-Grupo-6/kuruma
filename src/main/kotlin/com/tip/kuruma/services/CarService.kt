@@ -23,7 +23,7 @@ class CarService @Autowired constructor(
 
     fun getAllCars(): List<Car> {
         LOGGER.info("Get all cars")
-        return carRepository.findAll()
+        return carRepository.findAllByIsDeletedIsFalse()
     }
 
     @Transactional
