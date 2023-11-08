@@ -18,6 +18,13 @@ class NotificationController @Autowired constructor(
         return ResponseEntity.ok(NotificationDTO.fromNotifications(notifications))
     }
 
+    @GetMapping("/car/{carId}")
+    fun getAllNotificationsByCarId(@PathVariable carId: Long): ResponseEntity<List<NotificationDTO>> {
+        val notifications = notificationService.getAllNotificationsByCarId(carId)
+
+        return ResponseEntity.ok(NotificationDTO.fromNotifications(notifications))
+    }
+
     @PostMapping
     fun createNotification(@RequestBody notificationDTO: NotificationDTO): ResponseEntity<NotificationDTO> {
         val savedNotification = notificationService.saveNotification(notificationDTO.toNotification())
