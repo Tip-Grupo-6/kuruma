@@ -2,6 +2,22 @@ create database kuruma;
 
 \c kuruma;
 
+CREATE TYPE RoleEnum AS ENUM('USER', 'ADMIN');
+CREATE CAST (character varying AS RoleEnum) WITH INOUT AS ASSIGNMENT;
+
+create table users(
+      id INT GENERATED ALWAYS AS IDENTITY,
+      name varchar(256) NOT NULL,
+      email varchar(256) NOT NULL,
+      password varchar(256) NOT NULL,
+      role RoleEnum NOT NULL,
+      is_deleted boolean,
+      created_at date,
+      updated_at date,
+      PRIMARY KEY(id),
+      UNIQUE (email)
+);
+
 create table car(
     id INT GENERATED ALWAYS AS IDENTITY,
     brand varchar(256),
@@ -52,14 +68,4 @@ create table notification(
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id),
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );
-create table users(
-    id INT GENERATED ALWAYS AS IDENTITY,
-    name varchar(256) NOT NULL,
-    email varchar(256) NOT NULL,
-    password varchar(256) NOT NULL,
-    is_deleted boolean,
-    created_at date,
-    updated_at date,
-    PRIMARY KEY(id),
-    UNIQUE (email)
-);
+
