@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/cars")
+@CrossOrigin
 class CarController @Autowired constructor(
     private val carService: CarService
 ) {
