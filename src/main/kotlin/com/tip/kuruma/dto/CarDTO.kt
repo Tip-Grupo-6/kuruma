@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit
 
 data class CarDTO(
     var id: Long? = null,
+    val user_id: Long? = null,
     var brand: String? = null,
     var model: String? = null,
     var year: Int? = null,
@@ -23,6 +24,7 @@ data class CarDTO(
         fun fromCar(car: Car): CarDTO {
             val carDTO = CarDTO(
                 id = car.id,
+                user_id = car.userId,
                 brand = car.brand,
                 model = car.model,
                 year = car.year,
@@ -50,6 +52,7 @@ data class CarDTO(
     fun toCar(): Car {
         return Car(
             id = this.id,
+            userId = this.user_id,
             brand = this.brand,
             model = this.model,
             year = this.year,

@@ -10,6 +10,8 @@ data class Car(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    @Column(name = "user_id")
+    val userId: Long? = null,
     val brand: String? = null,
     val model: String? = null,
     @Column(name = "`year`")

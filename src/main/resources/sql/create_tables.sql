@@ -20,6 +20,7 @@ create table users(
 
 create table car(
     id INT GENERATED ALWAYS AS IDENTITY,
+    user_id INT NOT NULL,
     brand varchar(256),
     model varchar(256),
     year int,
@@ -29,7 +30,8 @@ create table car(
     is_deleted boolean,
     created_at date,
     updated_at date,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 create table maintenance_item(

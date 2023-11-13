@@ -29,7 +29,7 @@ class JwtService {
     }
 
     private fun getTokenWithExtraClaims(extraClaims: HashMap<String, Any>, user: User): String {
-        val userToken = UserToken(user.email!!, user.name!!, "1")
+        val userToken = UserToken(user.id, user.email, user.name, "1")
         return Jwts.builder()
                 .claims()
                 .empty()

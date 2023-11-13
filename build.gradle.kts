@@ -30,6 +30,8 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
+	implementation("org.wso2.orbit.io.projectreactor:reactor-core:3.3.9.wso2v1")
+
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
