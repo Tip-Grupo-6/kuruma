@@ -22,7 +22,7 @@ import java.time.LocalDate
         userToUpdate.let {
             it.name = user.name
             it.email = user.email
-            it.password = user.password
+//            it.password = user.password
             it.isDeleted = user.isDeleted
             it.updated_at = LocalDate.now()
             return saveUser(it)
@@ -35,7 +35,7 @@ import java.time.LocalDate
         userToUpdate.let {
             it.name = user.name ?: it.name
             it.email = user.email ?: it.email
-            it.password = user.password ?: it.password
+//            it.password = user.password ?: it.password
             it.isDeleted = user.isDeleted ?: it.isDeleted
             it.updated_at = LocalDate.now()
             return saveUser(it)

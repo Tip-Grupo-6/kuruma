@@ -40,4 +40,8 @@ class UserDTO(
             updated_at = this.updated_at
         )
     }
+
+    override fun toString(): String {
+        return "UserDTO(email=$email, name=$name)"
+    }
 }

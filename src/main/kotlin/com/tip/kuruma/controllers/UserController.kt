@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin
 class UserController @Autowired constructor(
     private val userService: UserService
 ){
@@ -18,11 +19,11 @@ class UserController @Autowired constructor(
         return ResponseEntity.ok(UserDTO.fromUsers(users))
     }
 
-    @PostMapping
-    fun createUser(@RequestBody userDTO: UserDTO): ResponseEntity<UserDTO> {
-        val savedUser = userService.saveUser(userDTO.toUser())
-        return ResponseEntity.status(201).body(UserDTO.fromUser(savedUser))
-    }
+//    @PostMapping
+//    fun createUser(@RequestBody userDTO: UserDTO): ResponseEntity<UserDTO> {
+//        val savedUser = userService.saveUser(userDTO.toUser())
+//        return ResponseEntity.status(201).body(UserDTO.fromUser(savedUser))
+//    }
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: Long): ResponseEntity<UserDTO> {

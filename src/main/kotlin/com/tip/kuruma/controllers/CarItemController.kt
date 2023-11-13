@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/car_items")
+@CrossOrigin
 class CarItemController @Autowired constructor(
     private val carItemService: CarItemService
 ) {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/notifications")
+@CrossOrigin
 class NotificationController @Autowired constructor(
     private val notificationService: NotificationService
 ) {
