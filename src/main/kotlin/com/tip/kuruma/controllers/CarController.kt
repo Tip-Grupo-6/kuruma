@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/cars")
-//@CrossOrigin(origins = ["*"])
+@CrossOrigin(origins = ["http://localhost:3000"])
 class CarController @Autowired constructor(
     private val carService: CarService
 ) {
