@@ -19,7 +19,8 @@ spring:
   jpa:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
 
-# actuator configs for endpoint to get health
+  main:
+    allow-bean-definition-overriding: true
 # GET /actuator/health
 management:
   endpoint:
