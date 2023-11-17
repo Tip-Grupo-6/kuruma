@@ -16,6 +16,7 @@ data class Notification(
     var frequency: Int? = null,
     var message: String? = null,
     var isDeleted: Boolean? = false,
+    var notificated_at: LocalDate? = null,
     var created_at: LocalDate? = LocalDate.now(),
     var updated_at: LocalDate? = LocalDate.now()
 )

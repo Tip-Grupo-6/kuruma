@@ -64,6 +64,7 @@ create table notification(
     frequency INT NOT NULL,
     message varchar(256) NOT NULL,
     is_deleted boolean,
+    notificated_at  date,
     created_at date,
     updated_at date,
     PRIMARY KEY(id),
