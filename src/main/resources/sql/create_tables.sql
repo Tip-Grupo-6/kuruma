@@ -71,4 +71,16 @@ create table notification(
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id),
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );
+create table suscription(
+                    id INT GENERATED ALWAYS AS IDENTITY,
+                    user_id INT NOT NULL,
+                    endpoint varchar(256),
+                    key varchar(256),
+                    auth varchar(20),
+                    is_deleted boolean,
+                    created_at date,
+                    updated_at date,
+                    PRIMARY KEY(id),
+                    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
+);
 
