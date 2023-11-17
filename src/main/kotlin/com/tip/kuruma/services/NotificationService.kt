@@ -27,6 +27,7 @@ class NotificationService @Autowired constructor(
             it.frequency = notification.frequency
             it.message = notification.message
             it.isDeleted = notification.isDeleted
+            it.notificated_at = notification.notificated_at
             it.updated_at = LocalDate.now()
             return saveNotification(it)
         }
@@ -40,6 +41,7 @@ class NotificationService @Autowired constructor(
             it.frequency = notification.frequency ?: it.frequency
             it.message = notification.message ?: it.message
             it.isDeleted = notification.isDeleted ?: it.isDeleted
+            it.notificated_at = notification.notificated_at ?: it.notificated_at
             it.updated_at = LocalDate.now()
             return saveNotification(it)
         }

@@ -10,6 +10,7 @@ data class NotificationDTO(
     var frequency: Int? = null,
     var message: String? = null,
     var is_deleted : Boolean? = false,
+    var notificated_at: LocalDate? = null,
     var created_at: LocalDate? = LocalDate.now(),
     var updated_at: LocalDate? = LocalDate.now()
 
@@ -23,6 +24,7 @@ data class NotificationDTO(
                 frequency = notification.frequency,
                 message = notification.message,
                 is_deleted = notification.isDeleted,
+                notificated_at = notification.notificated_at,
                 created_at = notification.created_at,
                 updated_at = notification.updated_at
             )
@@ -41,6 +43,7 @@ data class NotificationDTO(
             frequency = this.frequency,
             message = this.message,
             isDeleted = this.is_deleted,
+            notificated_at = this.notificated_at,
             created_at = this.created_at,
             updated_at = this.updated_at
         )
