@@ -9,4 +9,6 @@ interface SuscriptionRepository : JpaRepository<Suscription, Long> {
     fun findAllByIsDeletedIsFalse(): List<Suscription>
 
     fun getAllSuscriptionsByUserId(userId: Long): List<Suscription>
+
+    fun getByUserIdAndEndpoint(userId: Long, endpoint: String): Suscription?
 }

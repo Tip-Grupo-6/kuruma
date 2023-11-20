@@ -55,4 +55,10 @@ class SuscriptionController @Autowired constructor(
         suscriptionService.deleteSuscription(id)
         return ResponseEntity.noContent().build()
     }
+
+    @DeleteMapping
+    fun deleteSubscriptionByEndpoint(@RequestBody subscriptionDTO: SuscriptionDTO): ResponseEntity<Unit> {
+        suscriptionService.deleteSubscriptionByUserAndEndpoint(subscriptionDTO.user_id!!, subscriptionDTO.endpoint!!)
+        return ResponseEntity.noContent().build()
+    }
 }

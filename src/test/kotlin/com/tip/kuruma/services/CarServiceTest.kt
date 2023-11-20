@@ -20,7 +20,7 @@ class CarServiceTest  {
     private lateinit var carService: CarService
 
     private fun builtCar(): Car {
-        return CarBuilder().withCarItems(listOf()).withId(null).build()
+        return CarBuilder().withUserId(1L).withCarItems(listOf()).withId(null).build()
     }
 
     @BeforeEach
