@@ -197,7 +197,7 @@ class CarItemServiceTest {
         val newCarItems = listOf(carItem.copy(lastChange = LocalDate.now()))
 
         GIVEN {
-            val car = carRepository.save(Car(brand = "Test"))
+            val car = carRepository.save(Car(userId = 1L, brand = "Test"))
             carSavedId = car.id
             carItemService.saveCarItem(carItem.copy(carId = carSavedId))
         }

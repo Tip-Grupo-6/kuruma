@@ -23,13 +23,13 @@ class JwtService {
         private val LOGGER = LoggerFactory.getLogger(JwtService::class.java)
     }
 
-    fun getToken(user: User): String {
+    fun getToken(user: User, carId: Long?): String {
         LOGGER.info("Creating token for user ${user.username}")
-        return getTokenWithExtraClaims(HashMap(), user)
+        return getTokenWithExtraClaims(HashMap(), user, carId)
     }
 
-    private fun getTokenWithExtraClaims(extraClaims: HashMap<String, Any>, user: User): String {
-        val userToken = UserToken(user.id, user.email, user.name, "1")
+    private fun getTokenWithExtraClaims(extraClaims: HashMap<String, Any>, user: User, carId: Long?): String {
+        val userToken = UserToken(user.id, user.email, user.name, carId)
         return Jwts.builder()
                 .claims()
                 .empty()
