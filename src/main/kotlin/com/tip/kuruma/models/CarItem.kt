@@ -17,6 +17,8 @@ data class CarItem(
     @Column(name = "last_change")
     var lastChange: LocalDate = LocalDate.now(),
     @Column(name = "is_deleted")
+    val initialCarKilometers: Int? = null,
+    var currentKmsSinceLastChange: Int? = null,
     var isDeleted: Boolean? = false,
     var created_at: LocalDate? = LocalDate.now(),
     var updated_at: LocalDate? = LocalDate.now()){

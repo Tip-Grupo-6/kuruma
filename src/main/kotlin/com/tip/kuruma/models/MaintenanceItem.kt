@@ -13,6 +13,8 @@ data class MaintenanceItem(
         val description: String? = null,
         @Column(name = "replacement_frequency")
         val replacementFrequency: Int? = null,
+        @Column(name = "kilometer_frequency")
+        val kilometerFrequency: Int? = null,
         var created_at: LocalDate? = LocalDate.now(),
         var updated_at: LocalDate? = LocalDate.now()
 )

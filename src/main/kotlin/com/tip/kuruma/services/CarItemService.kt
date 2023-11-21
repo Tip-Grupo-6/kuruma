@@ -10,7 +10,8 @@ import java.time.LocalDate
 @Service
 class CarItemService(
     private val carItemRepository: CarItemRepository,
-    private val maintenanceService: MaintenanceService
+    private val maintenanceService: MaintenanceService,
+    private val carService: CarService
 ) {
 
     companion object {
@@ -25,12 +26,22 @@ class CarItemService(
     fun saveCarItem(carItem: CarItem): CarItem {
         LOGGER.info("Saving car item $carItem")
         val maintenanceItem = maintenanceService.findByCode(carItem.maintenanceItem?.code!!)
-        return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem))
+        val car = carService.getCarById(carItem.carId!!)
+        return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem, initialCarKilometers = car.kilometers?.toInt()))
     }
 
     fun getCarItemById(id: Long): CarItem {
-       LOGGER.info("Find car item with id $id")
-        return carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
+        LOGGER.info("Find car item with id $id")
+        val carItem = carItemRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Car item with id $id not found") }
+
+        // Update the current_kms_since_last_change property
+        val car_kilometers = carService.getCarById(carItem.carId!!).kilometers?.toInt()
+        if (car_kilometers != null) {
+            carItem.currentKmsSinceLastChange = car_kilometers - carItem.initialCarKilometers!!
+        }
+
+        return carItem
     }
 
     fun updateCarItem(id: Long, carItem: CarItem): CarItem {

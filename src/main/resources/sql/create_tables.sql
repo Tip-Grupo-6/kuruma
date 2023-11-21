@@ -39,6 +39,7 @@ create table maintenance_item(
      code varchar(30) NOT NULL,
      description varchar(256) NOT NULL,
      replacement_frequency INT NOT NULL,
+     kilometers_frequency INT NOT NULL,
      created_at date,
      updated_at date,
      PRIMARY KEY(id),
@@ -51,6 +52,8 @@ create table car_item(
     maintenance_item_id INT NOT NULL,
     last_change date,
     is_deleted boolean,
+    initial_kilometers varchar(256),
+    current_kilometers varchar(256),
     created_at date,
     updated_at date,
     PRIMARY KEY(id),
@@ -72,15 +75,15 @@ create table notification(
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id)
 );
 create table suscription(
-                    id INT GENERATED ALWAYS AS IDENTITY,
-                    user_id INT NOT NULL,
-                    endpoint varchar(256),
-                    key varchar(256),
-                    auth varchar(20),
-                    is_deleted boolean,
-                    created_at date,
-                    updated_at date,
-                    PRIMARY KEY(id),
-                    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
+    id INT GENERATED ALWAYS AS IDENTITY,
+    user_id INT NOT NULL,
+    endpoint varchar(256),
+    key varchar(256),
+    auth varchar(20),
+    is_deleted boolean,
+    created_at date,
+    updated_at date,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
 );
 

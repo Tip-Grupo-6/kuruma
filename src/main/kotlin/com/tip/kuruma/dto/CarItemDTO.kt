@@ -10,6 +10,9 @@ data class CarItemDTO(
     val code: String? = null,
     val name: String? = null,
     val replacement_frequency: Int? = null,
+    val initial_car_kilometers: Int? = null,
+    var current_kms_since_last_change: Int? = null,
+    var km_maintenance_messages: Map<String, Any>? = null,
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
     var due_status: Boolean = false,
@@ -26,6 +29,8 @@ data class CarItemDTO(
                 code = carItem.maintenanceItem?.code,
                 name = carItem.maintenanceItem?.description,
                 replacement_frequency = carItem.maintenanceItem?.replacementFrequency,
+                initial_car_kilometers = carItem.initialCarKilometers,
+                current_kms_since_last_change = carItem.currentKmsSinceLastChange,
                 is_deleted = carItem.isDeleted,
                 last_change = carItem.lastChange,
                 created_at = carItem.created_at,
@@ -36,6 +41,9 @@ data class CarItemDTO(
                 carItemDTO.next_change_due = nextChangeDue
                 carItemDTO.due_status = nextChangeDue.isBefore(LocalDate.now())
                 carItemDTO.status_color = carItemDTO.getCarItemStatusColor(carItemDTO)
+                carItemDTO.km_maintenance_messages = mapOf(
+                    "kilometer_maintenance_message" to carItemDTO.getKilometerMaintenanceMessage(carItemDTO)
+                )
             }
             return  carItemDTO
         }
@@ -64,6 +72,16 @@ data class CarItemDTO(
             // green should have due status false and next_change_due month should be after current month
             carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! -> "green"
             else -> "green"
+        }
+    }
+
+    fun getKilometerMaintenanceMessage(carItemDTO: CarItemDTO): String {
+        val maintenanceItemKilometerFrequency = carItemDTO.replacement_frequency
+        val currentKmsSinceLastChange = carItemDTO.current_kms_since_last_change
+        return when {
+            currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "Has alcanzado los kilómetros recomendados para este ítem de mantenimiento"
+            currentKmsSinceLastChange!! < maintenanceItemKilometerFrequency!! -> "Te faltan ${maintenanceItemKilometerFrequency - currentKmsSinceLastChange} kilómetros para este ítem de mantenimiento"
+            else -> "Has superado los kilómetros recomendados para este ítem de mantenimiento"
         }
     }
 }
