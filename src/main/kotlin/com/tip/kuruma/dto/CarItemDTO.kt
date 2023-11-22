@@ -10,9 +10,10 @@ data class CarItemDTO(
     val code: String? = null,
     val name: String? = null,
     val replacement_frequency: Int? = null,
+    val kilometers_frequency: Int? = null,
     val initial_car_kilometers: Int? = null,
     var current_kms_since_last_change: Int? = null,
-    var km_maintenance_messages: Map<String, Any>? = null,
+    var km_maintenance_messages: String? = null,
     var last_change: LocalDate? = null,
     var next_change_due: LocalDate? = null,
     var due_status: Boolean = false,
@@ -29,6 +30,7 @@ data class CarItemDTO(
                 code = carItem.maintenanceItem?.code,
                 name = carItem.maintenanceItem?.description,
                 replacement_frequency = carItem.maintenanceItem?.replacementFrequency,
+                kilometers_frequency = carItem.maintenanceItem?.kilometersFrequency,
                 initial_car_kilometers = carItem.initialCarKilometers,
                 current_kms_since_last_change = carItem.currentKmsSinceLastChange,
                 is_deleted = carItem.isDeleted,
@@ -41,9 +43,7 @@ data class CarItemDTO(
                 carItemDTO.next_change_due = nextChangeDue
                 carItemDTO.due_status = nextChangeDue.isBefore(LocalDate.now())
                 carItemDTO.status_color = carItemDTO.getCarItemStatusColor(carItemDTO)
-                carItemDTO.km_maintenance_messages = mapOf(
-                    "kilometer_maintenance_message" to carItemDTO.getKilometerMaintenanceMessage(carItemDTO)
-                )
+                carItemDTO.km_maintenance_messages = carItemDTO.getKilometerMaintenanceMessage(carItemDTO)
             }
             return  carItemDTO
         }
@@ -57,7 +57,7 @@ data class CarItemDTO(
         return CarItem(
                 id = this.id,
                 carId = this.car_id,
-                maintenanceItem = MaintenanceItem(code = this.code, description = this.name, replacementFrequency = this.replacement_frequency),
+                maintenanceItem = MaintenanceItem(code = this.code, description = this.name, replacementFrequency = this.replacement_frequency, kilometersFrequency = this.kilometers_frequency),
                 lastChange = this.last_change ?: LocalDate.now(),
                 isDeleted = this.is_deleted,
                 created_at = this.created_at,
@@ -76,7 +76,9 @@ data class CarItemDTO(
     }
 
     fun getKilometerMaintenanceMessage(carItemDTO: CarItemDTO): String {
-        val maintenanceItemKilometerFrequency = carItemDTO.replacement_frequency
+        // print maiteinance item kilometers frequency
+        println("Maintenance item kilometers frequency: ${carItemDTO.toCarItem().maintenanceItem}")
+        val maintenanceItemKilometerFrequency = carItemDTO.toCarItem().maintenanceItem?.kilometersFrequency
         val currentKmsSinceLastChange = carItemDTO.current_kms_since_last_change
         return when {
             currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "Has alcanzado los kilómetros recomendados para este ítem de mantenimiento"
