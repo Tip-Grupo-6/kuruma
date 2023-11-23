@@ -5,11 +5,11 @@ import com.tip.kuruma.dto.auth.RegisterUserResponseDTO
 import com.tip.kuruma.dto.auth.TokenResponseDTO
 import com.tip.kuruma.enums.Role
 import com.tip.kuruma.models.User
+import com.tip.kuruma.repositories.CarRepository
 import com.tip.kuruma.repositories.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service
 @Service
 class AuthService(
         val userRepository: UserRepository,
+        val carRepository: CarRepository,
         val jwtService: JwtService,
         val passwordEncoder: PasswordEncoder,
         val authenticationManager: AuthenticationManager
@@ -30,7 +31,8 @@ class AuthService(
         LOGGER.info("Authenticating user ${request.username}")
         authenticationManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
         val user = userRepository.findByEmail(request.username).get()
-        val token = jwtService.getToken(user)
+        val carId = carRepository.getCarIdByUser(user.id!!)
+        val token = jwtService.getToken(user, carId)
         return TokenResponseDTO(token)
     }
 

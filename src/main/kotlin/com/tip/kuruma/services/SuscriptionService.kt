@@ -3,6 +3,7 @@ package com.tip.kuruma.services
 import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.models.Suscription
 import com.tip.kuruma.repositories.SuscriptionRepository
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -11,6 +12,12 @@ import java.time.LocalDate
 class SuscriptionService @Autowired constructor(
     private val suscriptionRepository: SuscriptionRepository
 ) {
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(SuscriptionService::class.java)
+    }
+
+
     fun getAllSuscriptions(): List<Suscription> = suscriptionRepository.findAllByIsDeletedIsFalse()
 
     fun getAllSuscriptionsByUserId(userId: Long): List<Suscription> = suscriptionRepository.getAllSuscriptionsByUserId(userId)
@@ -48,4 +55,13 @@ class SuscriptionService @Autowired constructor(
         suscription.isDeleted = true
         saveSuscription(suscription)
     }
+
+    fun deleteSubscriptionByUserAndEndpoint(userId: Long, endpoint: String) {
+        LOGGER.info("Finding subscription for user id $userId and endpoint $endpoint")
+        suscriptionRepository.getByUserIdAndEndpoint(userId, endpoint)?.let {
+            saveSuscription(it.copy(isDeleted = true))
+            LOGGER.info("Subscription deleted")
+        }
+    }
+
 }

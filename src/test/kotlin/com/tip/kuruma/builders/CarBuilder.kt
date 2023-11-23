@@ -6,6 +6,7 @@ import com.tip.kuruma.models.CarItem
 class CarBuilder {
 
     private var id: Long? = null
+    private var userId: Long? = null
     private var brand: String = "Honda"
     private var model: String = "Civic"
     private var year: Int = 2023
@@ -15,6 +16,11 @@ class CarBuilder {
 
     fun withId(id: Long?): CarBuilder {
         this.id = id
+        return this
+    }
+
+    fun withUserId(id: Long): CarBuilder {
+        this.userId = id
         return this
     }
 
@@ -51,6 +57,7 @@ class CarBuilder {
     fun build(): Car {
         return Car(
             id = id,
+            userId = userId,
             brand = brand,
             model = model,
             year = year,

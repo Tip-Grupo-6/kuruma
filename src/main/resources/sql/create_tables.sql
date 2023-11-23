@@ -77,9 +77,9 @@ create table notification(
 create table suscription(
     id INT GENERATED ALWAYS AS IDENTITY,
     user_id INT NOT NULL,
-    endpoint varchar(256),
+    endpoint varchar(512),
     key varchar(256),
-    auth varchar(20),
+    auth varchar(100),
     is_deleted boolean,
     created_at date,
     updated_at date,

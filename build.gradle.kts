@@ -37,6 +37,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.postgresql:postgresql")
 
+	// push notifications
+	implementation("nl.martijndwars:web-push:5.1.1")
+	implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
 	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
