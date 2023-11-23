@@ -17,11 +17,11 @@ data class CarItem(
     @Column(name = "last_change")
     var lastChange: LocalDate = LocalDate.now(),
     @Column(name = "current_kms_since_last_change")
-    var currentKmsSinceLastChange: Int? = null,
+    var currentKmsSinceLastChange: Int? = 0,
     @Column(name = "is_deleted")
     var isDeleted: Boolean? = false,
     @Column(name = "initial_car_kilometers")
-    val initialCarKilometers: Int? = null,
+    val initialCarKilometers: Int? = 0,
     var created_at: LocalDate? = LocalDate.now(),
     var updated_at: LocalDate? = LocalDate.now()){
 

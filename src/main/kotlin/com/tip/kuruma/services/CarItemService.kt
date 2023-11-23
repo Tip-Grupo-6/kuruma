@@ -23,7 +23,6 @@ class CarItemService(
     fun getAllCarItems(): List<CarItem> {
         LOGGER.info("Find all car items")
         val carItems = carItemRepository.findAll()
-        // TODO: call all the cars in a single query by ids to improve performance
 
         carItems.forEach { updateCurrentKmsSinceLastChange(it) }
 
@@ -42,9 +41,6 @@ class CarItemService(
         LOGGER.info("Find car item with id $id")
         val carItem = carItemRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Car item with id $id not found") }
-
-        // TODO: Evaluate if it's better to update the kilometers when the car is updated and move this logic
-        // to the car service
 
         updateCurrentKmsSinceLastChange(carItem)
 
@@ -82,6 +78,7 @@ class CarItemService(
         val car_kilometers = carService.getCarById(carItem.carId!!).kilometers?.toInt()
         if (car_kilometers != null) {
             carItem.currentKmsSinceLastChange = car_kilometers - carItem.initialCarKilometers!!
+            carItemRepository.save(carItem)
         }
     }
 

@@ -66,24 +66,24 @@ data class CarItemDTO(
     }
 
     fun getCarItemStatusColor(carItemDTO: CarItemDTO): String {
+        val maintenanceItemKilometerFrequency = carItemDTO.toCarItem().maintenanceItem?.kilometersFrequency
+        val currentKmsSinceLastChange = carItemDTO.current_kms_since_last_change
         return when {
-            carItemDTO.due_status -> "red"
-            carItemDTO.next_change_due?.month == LocalDate.now().month -> "yellow"
-            // green should have due status false and next_change_due month should be after current month
-            carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! -> "green"
+            carItemDTO.due_status || (currentKmsSinceLastChange ?: 0) > (maintenanceItemKilometerFrequency ?: 0) -> "red"
+            carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1)) == true && (currentKmsSinceLastChange ?: 0) < (maintenanceItemKilometerFrequency ?: 0) -> "green"
+            carItemDTO.next_change_due?.month == LocalDate.now().month ||  (currentKmsSinceLastChange ?: 0) == (maintenanceItemKilometerFrequency ?: 0) -> "yellow"
             else -> "green"
         }
     }
 
     fun getKilometerMaintenanceMessage(carItemDTO: CarItemDTO): String {
-        // print maiteinance item kilometers frequency
-        println("Maintenance item kilometers frequency: ${carItemDTO.toCarItem().maintenanceItem}")
         val maintenanceItemKilometerFrequency = carItemDTO.toCarItem().maintenanceItem?.kilometersFrequency
         val currentKmsSinceLastChange = carItemDTO.current_kms_since_last_change
+        val carItemName = carItemDTO.name ?: "Ítem"
         return when {
-            currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "Has alcanzado los kilómetros recomendados para este ítem de mantenimiento"
-            currentKmsSinceLastChange!! < maintenanceItemKilometerFrequency!! -> "Te faltan ${maintenanceItemKilometerFrequency - currentKmsSinceLastChange} kilómetros para este ítem de mantenimiento"
-            else -> "Has superado los kilómetros recomendados para este ítem de mantenimiento"
+            currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "Has alcanzado los kilómetros recomendados de tu $carItemName. Ya es hora de cambiarlo"
+            (currentKmsSinceLastChange ?: 0) < (maintenanceItemKilometerFrequency ?: 0) -> "Te faltan ${(maintenanceItemKilometerFrequency ?: 0) - (currentKmsSinceLastChange ?: 0)} kilómetros para cambiar tu $carItemName"
+            else -> "Has superado los kilómetros recomendados de tu $carItemName. Deberías cambiarlo lo antes posible"
         }
     }
 }
