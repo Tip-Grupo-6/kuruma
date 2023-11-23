@@ -9,6 +9,8 @@ class CarItemBuilder {
     private var maintenanceItem: MaintenanceItem? = MaintenanceItemBuilder().build()
     private var lastChange =  LocalDate.now()
     private var isDeleted = false
+    private var initialCarKilometers = 500
+    private var currentKmsSinceLastChange = 4000
 
     fun withMaintenanceItem(maintenanceItem: MaintenanceItem): CarItemBuilder {
         this.maintenanceItem = maintenanceItem
@@ -25,12 +27,24 @@ class CarItemBuilder {
         return this
     }
 
+    fun withInitialCarKilometers(initialCarKilometers: Int): CarItemBuilder {
+        this.initialCarKilometers = initialCarKilometers
+        return this
+    }
+
+    fun withCurrentKmsSinceLastChange(currentKmsSinceLastChange: Int): CarItemBuilder {
+        this.currentKmsSinceLastChange = currentKmsSinceLastChange
+        return this
+    }
+
     fun build(): CarItem {
         return CarItem(
             id = id,
             maintenanceItem = maintenanceItem,
             isDeleted = isDeleted,
-            lastChange = lastChange
+            lastChange = lastChange,
+            initialCarKilometers = initialCarKilometers,
+            currentKmsSinceLastChange = currentKmsSinceLastChange
 
         )
     }
