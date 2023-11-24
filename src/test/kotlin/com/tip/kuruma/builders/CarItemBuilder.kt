@@ -6,6 +6,7 @@ import java.time.LocalDate
 
 class CarItemBuilder {
     private var id: Long = 1L
+    private var carId: Long = 1L
     private var maintenanceItem: MaintenanceItem? = MaintenanceItemBuilder().build()
     private var lastChange =  LocalDate.now()
     private var isDeleted = false
@@ -37,9 +38,20 @@ class CarItemBuilder {
         return this
     }
 
+    fun withCarId(carId: Long): CarItemBuilder {
+        this.carId = carId
+        return this
+    }
+
+    fun withId(id: Long): CarItemBuilder {
+        this.id = id
+        return this
+    }
+
     fun build(): CarItem {
         return CarItem(
             id = id,
+            carId = carId,
             maintenanceItem = maintenanceItem,
             isDeleted = isDeleted,
             lastChange = lastChange,

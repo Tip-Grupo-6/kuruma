@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS maintenance_item(
      id INTEGER PRIMARY KEY AUTO_INCREMENT,
      code varchar(30) NOT NULL,
      description varchar(256) NOT NULL,
-     replacement_frequency INT NOT NULL,
+     replacement_frequency INT,
+     kilometers_frequency INT,
      created_at date,
      updated_at date
 );
@@ -42,6 +43,8 @@ CREATE TABLE IF NOT EXISTS car_item(
      car_id INTEGER,
      maintenance_item_id INT NOT NULL,
      last_change date,
+     initial_car_kilometers INT,
+     current_kms_since_last_change INT,
      is_deleted boolean,
      created_at date,
      updated_at date,
