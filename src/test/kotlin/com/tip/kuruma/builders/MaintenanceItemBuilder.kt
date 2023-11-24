@@ -7,6 +7,7 @@ class MaintenanceItemBuilder {
     private var code = "OIL"
     private var description = "Oil change"
     private var replacementFrequency = 6
+    private var kilometersFrequency = 10000
 
     fun withCode(code: String): MaintenanceItemBuilder {
         this.code = code
@@ -23,12 +24,18 @@ class MaintenanceItemBuilder {
         return this
     }
 
+    fun withKilometersFrequency(kilometersFrequency: Int): MaintenanceItemBuilder {
+        this.kilometersFrequency = kilometersFrequency
+        return this
+    }
+
     fun build(): MaintenanceItem {
         return MaintenanceItem(
             id = id,
             code = code,
             description = description,
-            replacementFrequency = replacementFrequency
+            replacementFrequency = replacementFrequency,
+            kilometersFrequency = kilometersFrequency
         )
     }
 }

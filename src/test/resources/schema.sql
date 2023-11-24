@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS maintenance_item(
      id INTEGER PRIMARY KEY AUTO_INCREMENT,
      code varchar(30) NOT NULL,
      description varchar(256) NOT NULL,
-     replacement_frequency INT NOT NULL,
+     replacement_frequency INT,
+     kilometers_frequency INT,
      created_at date,
      updated_at date
 );
@@ -42,6 +43,8 @@ CREATE TABLE IF NOT EXISTS car_item(
      car_id INTEGER,
      maintenance_item_id INT NOT NULL,
      last_change date,
+     initial_car_kilometers INT,
+     current_kms_since_last_change INT,
      is_deleted boolean,
      created_at date,
      updated_at date,
@@ -77,8 +80,8 @@ CREATE TABLE IF NOT EXISTS suscription(
 
 -------------------------- INSERTS --------------------------
 
-INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('OIL', 'Aceite', 6);
-INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('WATER', 'Agua', 3);
-INSERT INTO maintenance_item(code, description, replacement_frequency) VAlUES('TIRE_PRESSURE', 'Presión de neumáticos', 2);
+INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('OIL', 'Aceite', 6, 10000);
+INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('WATER', 'Agua', 3, 15000);
+INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('TIRE_PRESSURE', 'Presión de neumáticos', 2, 40000);
 
 INSERT INTO users (id, name, email, password, role, is_deleted, created_at, updated_at) VALUES(1, 'user', 'mail@mail.com', '$2a$10$LJXsgDicTbiFhrANBn4lv.Rn95sWk49Iwdu/hSX8C.ebTuhBPG4Xa', 'USER', false, '2023-11-10', '2023-11-10');

@@ -6,11 +6,12 @@ import com.tip.kuruma.models.CarItem
 class CarBuilder {
 
     private var id: Long? = null
-    private var userId: Long? = null
+    private var userId: Long? = 1L
     private var brand: String = "Honda"
     private var model: String = "Civic"
     private var year: Int = 2023
     private var color: String = "white"
+    private var kilometers: String = "500"
     private var isDeleted: Boolean = false
     private var carItems: List<CarItem>? = listOf(CarItemBuilder().build())
 
@@ -62,6 +63,7 @@ class CarBuilder {
             model = model,
             year = year,
             color = color,
+            kilometers = kilometers,
             isDeleted = isDeleted,
             carItems = carItems
         )

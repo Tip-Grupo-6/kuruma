@@ -5,12 +5,15 @@ import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.repositories.CarItemRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.context.annotation.Lazy
 import java.time.LocalDate
 
 @Service
 class CarItemService(
     private val carItemRepository: CarItemRepository,
-    private val maintenanceService: MaintenanceService
+    private val maintenanceService: MaintenanceService,
+    @Lazy
+    private val carService: CarService
 ) {
 
     companion object {
@@ -18,20 +21,32 @@ class CarItemService(
     }
 
     fun getAllCarItems(): List<CarItem> {
-        LOGGER.info("Get all Car Items")
-        return carItemRepository.findAll()
+        LOGGER.info("Find all car items")
+        val carItems = carItemRepository.findAll()
+
+        carItems.forEach { updateCurrentKmsSinceLastChange(it) }
+
+        return carItems
     }
+
 
     fun saveCarItem(carItem: CarItem): CarItem {
         LOGGER.info("Saving car item $carItem")
         val maintenanceItem = maintenanceService.findByCode(carItem.maintenanceItem?.code!!)
-        return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem))
+        val car = carService.getCarById(carItem.carId!!)
+        return carItemRepository.save(carItem.copy(maintenanceItem = maintenanceItem, initialCarKilometers = car.kilometers?.toInt()))
     }
 
     fun getCarItemById(id: Long): CarItem {
-       LOGGER.info("Find car item with id $id")
-        return carItemRepository.findById(id).orElseThrow { EntityNotFoundException("car item with id $id not found") }
+        LOGGER.info("Find car item with id $id")
+        val carItem = carItemRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Car item with id $id not found") }
+
+        updateCurrentKmsSinceLastChange(carItem)
+
+        return carItem
     }
+
 
     fun updateCarItem(id: Long, carItem: CarItem): CarItem {
         val carItemToUpdate = getCarItemById(id)
@@ -57,6 +72,14 @@ class CarItemService(
         val carItemsFromDB = carItemRepository.findByCarId(carId)
         carItemsFromDB.forEach { doLogicDelete(it) }
         return carItems.map { this.saveCarItem(it.copy(carId = carId)) }
+    }
+
+    fun updateCurrentKmsSinceLastChange(carItem: CarItem) {
+        val car_kilometers = carService.getCarById(carItem.carId!!).kilometers?.toInt()
+        if (car_kilometers != null) {
+            carItem.currentKmsSinceLastChange = car_kilometers - carItem.initialCarKilometers!!
+            carItemRepository.save(carItem)
+        }
     }
 
 }

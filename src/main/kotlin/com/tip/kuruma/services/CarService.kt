@@ -43,6 +43,11 @@ class CarService @Autowired constructor(
                 .orElseThrow { EntityNotFoundException("car with id $id not found") }
     }
 
+    fun getCarByIds(ids: List<Long>): List<Car> {
+        LOGGER.info("Find cars with ids $ids")
+        return carRepository.findAllById(ids)
+    }
+
     fun deleteCar(id: Long) {
         val existingCar = this.getCarById(id)
         val updatedCar = existingCar.copy(isDeleted = true)
