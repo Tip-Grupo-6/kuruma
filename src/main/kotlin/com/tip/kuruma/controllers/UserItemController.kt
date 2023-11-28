@@ -26,6 +26,13 @@ class UserItemController @Autowired constructor(
         return ResponseEntity.ok(UserItemDTO.fromUserItems(user_items))
     }
 
+    @GetMapping("/user/{userId}")
+    fun getAllUserItemsByUserId(@PathVariable userId: Long): ResponseEntity<List<UserItemDTO>> {
+        val user_items = userItemSerivce.getAllUserItemsByUserId(userId)
+
+        return ResponseEntity.ok(UserItemDTO.fromUserItems(user_items))
+    }
+
     @PostMapping
     fun createUserItem(@RequestBody userItemDTO: UserItemDTO): ResponseEntity<UserItemDTO> {
         LOGGER.info("Calling to POST /user_items with request $userItemDTO")

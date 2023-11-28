@@ -11,9 +11,7 @@ import java.time.LocalDate
 @Service
 class UserItemService(
     private val userItemRepository: UserItemRepository,
-    private val maintenanceService: MaintenanceService,
-    @Lazy
-    private val userService: UserService
+    private val maintenanceService: MaintenanceService
 ) {
 
     companion object {
@@ -23,6 +21,12 @@ class UserItemService(
     fun getAllUserItems(): List<UserItem> {
         LOGGER.info("Find all user items")
         val userItems = userItemRepository.findAll()
+        return userItems
+    }
+
+    fun getAllUserItemsByUserId(userId: Long): List<UserItem> {
+        LOGGER.info("Find all user items by user id $userId")
+        val userItems = userItemRepository.findByUserId(userId)
         return userItems
     }
 
