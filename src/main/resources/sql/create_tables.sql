@@ -18,6 +18,7 @@ create table users(
       UNIQUE (email)
 );
 
+
 create table car(
     id INT GENERATED ALWAYS AS IDENTITY,
     user_id INT NOT NULL,
@@ -39,7 +40,7 @@ create table maintenance_item(
      code varchar(30) NOT NULL,
      description varchar(256) NOT NULL,
      replacement_frequency INT NOT NULL,
-     kilometers_frequency INT NOT NULL,
+     kilometers_frequency INT,
      created_at date,
      updated_at date,
      PRIMARY KEY(id),
@@ -60,6 +61,20 @@ create table car_item(
     CONSTRAINT fk_car FOREIGN KEY(car_id) REFERENCES car(id),
     CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
+
+create table user_item(
+    id INT GENERATED ALWAYS AS IDENTITY,
+    user_id INT NOT NULL,
+    maintenance_item_id INT NOT NULL,
+    last_change date,
+    is_deleted boolean,
+    created_at date,
+    updated_at date,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_maintenance_item FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
+);
+
 create table notification(
     id INT GENERATED ALWAYS AS IDENTITY,
     maintenance_item_id INT NOT NULL,

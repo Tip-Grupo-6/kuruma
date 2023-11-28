@@ -52,6 +52,16 @@ CREATE TABLE IF NOT EXISTS car_item(
      FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
 
+create table user_item(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER NOT NULL,
+  maintenance_item_id INTEGER NOT NULL,
+  created_at date,
+  updated_at date,
+  FOREIGN KEY(user_id) REFERENCES users(id),
+  FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
+);
+
 CREATE TABLE IF NOT EXISTS notification(
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     maintenance_item_id INTEGER NOT NULL,
@@ -83,5 +93,7 @@ CREATE TABLE IF NOT EXISTS suscription(
 INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('OIL', 'Aceite', 6, 10000);
 INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('WATER', 'Agua', 3, 15000);
 INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('TIRE_PRESSURE', 'Presión de neumáticos', 2, 40000);
+INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('DRIVER_LICENSE', 'Licencia de conducir', 12, null);
+INSERT INTO maintenance_item(code, description, replacement_frequency, kilometers_frequency) VAlUES('INSURANCE', 'Seguro', 1, null);
 
 INSERT INTO users (id, name, email, password, role, is_deleted, created_at, updated_at) VALUES(1, 'user', 'mail@mail.com', '$2a$10$LJXsgDicTbiFhrANBn4lv.Rn95sWk49Iwdu/hSX8C.ebTuhBPG4Xa', 'USER', false, '2023-11-10', '2023-11-10');
