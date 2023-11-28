@@ -71,7 +71,7 @@ data class CarItemDTO(
         return when {
             carItemDTO.due_status || currentKmsSinceLastChange > maintenanceItemKilometerFrequency -> "red"
             carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! && currentKmsSinceLastChange < maintenanceItemKilometerFrequency -> "green"
-            carItemDTO.next_change_due?.month == LocalDate.now().month ||  currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "yellow"
+            carItemDTO.next_change_due?.month == LocalDate.now().month && carItemDTO.next_change_due?.year == LocalDate.now().year  ||  currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "yellow"
             else -> "green"
         }
     }
