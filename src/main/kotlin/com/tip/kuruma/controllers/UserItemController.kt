@@ -2,7 +2,6 @@ package com.tip.kuruma.controllers
 
 import com.tip.kuruma.dto.UserItemDTO
 import com.tip.kuruma.services.UserItemService
-import com.tip.kuruma.services.CarService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -24,7 +23,6 @@ class UserItemController @Autowired constructor(
     fun getAllUserItems(): ResponseEntity<List<UserItemDTO>> {
         LOGGER.info("Calling to GET /user_items")
         val user_items = userItemSerivce.getAllUserItems()
-
         return ResponseEntity.ok(UserItemDTO.fromUserItems(user_items))
     }
 
@@ -38,15 +36,15 @@ class UserItemController @Autowired constructor(
     @GetMapping("/{id}")
     fun getUserItemByID(@PathVariable id: Long): ResponseEntity<UserItemDTO> {
         LOGGER.info("Calling to GET /user_items/$id")
-        val carItem = userItemSerivce.getUserItemById(id)
-        return ResponseEntity.ok(carItem.let { UserItemDTO.fromUserItem(it) })
+        val userItem = userItemSerivce.getUserItemById(id)
+        return ResponseEntity.ok(userItem.let { UserItemDTO.fromUserItem(it) })
     }
 
     @PutMapping("/{id}")
     fun updateUserItem(@PathVariable id: Long,@RequestBody userItemDTO: UserItemDTO): ResponseEntity<UserItemDTO> {
         LOGGER.info("Calling to PUT /user_items/$id with request $userItemDTO")
-        val carItem = userItemSerivce.updateUserItem(id, userItemDTO.toUserItem())
-        return ResponseEntity.ok(UserItemDTO.fromUserItem(carItem))
+        val userItem = userItemSerivce.updateUserItem(id, userItemDTO.toUserItem())
+        return ResponseEntity.ok(UserItemDTO.fromUserItem(userItem))
     }
 
     @DeleteMapping("/{id}")
