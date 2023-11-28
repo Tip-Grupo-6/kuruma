@@ -12,16 +12,6 @@ create table users(
     UNIQUE (email)
 );
 
-create table user_item(
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    user_id INTEGER NOT NULL,
-    maintenance_item_id INTEGER NOT NULL,
-    created_at date,
-    updated_at date,
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
-);
-
 
 CREATE TABLE IF NOT EXISTS car(
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -60,6 +50,16 @@ CREATE TABLE IF NOT EXISTS car_item(
      updated_at date,
      FOREIGN KEY(car_id) REFERENCES car(id),
      FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
+);
+
+create table user_item(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER NOT NULL,
+  maintenance_item_id INTEGER NOT NULL,
+  created_at date,
+  updated_at date,
+  FOREIGN KEY(user_id) REFERENCES users(id),
+  FOREIGN KEY(maintenance_item_id) REFERENCES maintenance_item(id)
 );
 
 CREATE TABLE IF NOT EXISTS notification(
