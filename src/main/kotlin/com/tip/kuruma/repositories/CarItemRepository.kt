@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface  CarItemRepository : JpaRepository<CarItem, Long> {
 
-    fun findByCarId(id: Long): List<CarItem>
-
+    fun findByCarIdAndIsDeletedIsFalse(id: Long): List<CarItem>
 }

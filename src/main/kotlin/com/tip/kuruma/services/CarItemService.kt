@@ -1,6 +1,7 @@
 package com.tip.kuruma.services
 
 import com.tip.kuruma.EntityNotFoundException
+import com.tip.kuruma.models.Car
 import com.tip.kuruma.models.CarItem
 import com.tip.kuruma.repositories.CarItemRepository
 import org.slf4j.LoggerFactory
@@ -69,17 +70,24 @@ class CarItemService(
     fun deleteAllCarItems() = carItemRepository.deleteAll()
 
     fun updateCarItems(carId: Long, carItems: List<CarItem>): List<CarItem> {
-        val carItemsFromDB = carItemRepository.findByCarId(carId)
+        val carItemsFromDB = carItemRepository.findByCarIdAndIsDeletedIsFalse(carId)
         carItemsFromDB.forEach { doLogicDelete(it) }
         return carItems.map { this.saveCarItem(it.copy(carId = carId)) }
     }
 
-    fun updateCurrentKmsSinceLastChange(carItem: CarItem) {
-        val car_kilometers = carService.getCarById(carItem.carId!!).kilometers?.toInt()
+    fun updateCurrentKmsSinceLastChange(carItem: CarItem, car: Car? = null) {
+        val car_kilometers = (car ?: carService.getCarById(carItem.carId!!)).kilometers?.toInt()
         if (car_kilometers != null) {
             carItem.currentKmsSinceLastChange = car_kilometers - carItem.initialCarKilometers!!
             carItemRepository.save(carItem)
         }
+    }
+
+    fun getAllByCarId(car: Car): List<CarItem> {
+        LOGGER.info("Find all car items")
+        val carItems = carItemRepository.findByCarIdAndIsDeletedIsFalse(car.id!!)
+        carItems.forEach { updateCurrentKmsSinceLastChange(it, car) }
+        return carItems
     }
 
 }

@@ -70,8 +70,8 @@ data class CarItemDTO(
         val currentKmsSinceLastChange = carItemDTO.current_kms_since_last_change  ?: 0
         return when {
             carItemDTO.due_status || currentKmsSinceLastChange > maintenanceItemKilometerFrequency -> "red"
-            carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! && currentKmsSinceLastChange < maintenanceItemKilometerFrequency -> "green"
             carItemDTO.next_change_due?.month == LocalDate.now().month && carItemDTO.next_change_due?.year == LocalDate.now().year  ||  currentKmsSinceLastChange == maintenanceItemKilometerFrequency -> "yellow"
+            carItemDTO.next_change_due?.isAfter(LocalDate.now().plusMonths(1))!! -> "green"
             else -> "green"
         }
     }

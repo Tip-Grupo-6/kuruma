@@ -58,7 +58,7 @@ class SuscriptionService @Autowired constructor(
 
     fun deleteSubscriptionByUserAndEndpoint(userId: Long, endpoint: String) {
         LOGGER.info("Finding subscription for user id $userId and endpoint $endpoint")
-        suscriptionRepository.getByUserIdAndEndpoint(userId, endpoint)?.let {
+        suscriptionRepository.getByUserIdAndEndpointAndIsDeletedFalse(userId, endpoint)?.let {
             saveSuscription(it.copy(isDeleted = true))
             LOGGER.info("Subscription deleted")
         }

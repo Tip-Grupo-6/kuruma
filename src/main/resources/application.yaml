@@ -37,3 +37,8 @@ management:
 push-notifications:
   public-key: BB_54eE5xN6sw3AsPj4Wz7OlyEeX5qbBoZxgM5lvahdu2VIPIJLzKXq0xBUt4N4LtCQyH72xD6oHkhJ5_7-CLGg
   private-key: Eym-2LdPXdyOGZZWFSVgzHh87-SchTe0qETgRAOhtG8
+
+scheduling:
+  push-notification:
+#    cron: "1 * * * * *"
+    cron: "0 10 * * * *"
