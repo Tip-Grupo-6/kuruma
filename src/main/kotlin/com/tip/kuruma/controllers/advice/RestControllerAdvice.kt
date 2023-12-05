@@ -26,7 +26,7 @@ class RestControllerAdvice {
     fun handleEntityNotFoundException(ex: AuthenticationException): ResponseEntity<ErrorDTO> {
         LOGGER.info("Error on authentication: ${ex.message}")
         val error = ErrorDTO("INVALID_CREDENTIALS", "Invalid credentials")
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
     }
 
     @ExceptionHandler(RuntimeException::class)

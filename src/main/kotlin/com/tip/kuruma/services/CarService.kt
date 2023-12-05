@@ -4,7 +4,6 @@ import com.tip.kuruma.EntityNotFoundException
 import com.tip.kuruma.models.Car
 import com.tip.kuruma.repositories.CarRepository
 import org.slf4j.LoggerFactory
-import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,8 +38,10 @@ class CarService @Autowired constructor(
 
     fun getCarById(id: Long): Car {
         LOGGER.info("Find car with id $id")
-        return carRepository.findById(id)
-                .orElseThrow { EntityNotFoundException("car with id $id not found") }
+        val car = carRepository.findById(id)
+                    .orElseThrow { EntityNotFoundException("car with id $id not found") }
+        val carItems = carItemService.getAllByCarId(car!!)
+        return car.copy(carItems = carItems)
     }
 
     fun getCarByIds(ids: List<Long>): List<Car> {
