@@ -7,4 +7,5 @@ import java.util.*
 interface MaintenanceItemRepository: JpaRepository<MaintenanceItem, Long> {
 
     fun findByCode(code: String): Optional<MaintenanceItem>
+
 }

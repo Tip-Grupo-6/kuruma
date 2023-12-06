@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.Rollback
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 class CarServiceTest  {
@@ -29,12 +31,16 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `fetching all cars when there is none of the available `() {
         val foundCars = carService.getAllCars()
         assertEquals(0, foundCars.size)
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `fetching all cars when there is one of the available `() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -44,6 +50,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `fetching a car by id when it exists`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -52,6 +60,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `fetching a car by id when it does not exist`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -61,6 +71,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `saving a car`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -74,6 +86,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `deleting a car by id when it exists`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -83,6 +97,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `deleting a car by id when it does not exist`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -92,6 +108,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `updating a car by id when it exists`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)
@@ -100,6 +118,8 @@ class CarServiceTest  {
     }
 
     @Test
+    @Transactional
+    @Rollback
     fun `updating a car by id when it does not exist`() {
         val car = builtCar()
         val savedCar = carService.saveCar(car)

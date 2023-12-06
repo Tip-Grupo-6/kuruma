@@ -10,6 +10,7 @@ import com.tip.kuruma.models.MaintenanceItem
 import com.tip.kuruma.repositories.CarItemRepository
 import com.tip.kuruma.repositories.CarRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,6 +32,11 @@ class CarItemServiceTest {
 
     @Autowired
     private lateinit var carService: CarService
+
+    @BeforeEach
+    fun clearDatabase() {
+        carItemRepository.deleteAll()
+    }
 
     @Test
     @Transactional
