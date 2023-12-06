@@ -16,6 +16,11 @@ class MaintenanceService(
         private val LOGGER = LoggerFactory.getLogger(MaintenanceService::class.java)
     }
 
+    fun saveMaintenanceItem(maintenanceItem: MaintenanceItem): MaintenanceItem {
+        LOGGER.info("Saving maintenance item $maintenanceItem")
+        return maintenanceItemRepository.save(maintenanceItem)
+    }
+
     fun getAll(): List<MaintenanceItem> {
         LOGGER.info("Find all maintenance items")
         return maintenanceItemRepository.findAll()
