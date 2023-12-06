@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class NotificationDTO(
     var id: Long? = null,
+    var user_id: Long? = null,
     var car_id : Long? = null,
     var maintenance_item_id: Long? = null,
     var frequency: Int? = null,
@@ -19,6 +20,7 @@ data class NotificationDTO(
         fun fromNotification(notification: Notification): NotificationDTO {
             return NotificationDTO(
                 id = notification.id,
+                user_id= notification.userId,
                 car_id = notification.carId,
                 maintenance_item_id = notification.maintenanceItemId,
                 frequency = notification.frequency,
@@ -38,6 +40,7 @@ data class NotificationDTO(
 
     fun toNotification(): Notification {
         return Notification(
+            userId = this.user_id,
             carId = this.car_id,
             maintenanceItemId = this.maintenance_item_id,
             frequency = this.frequency,
