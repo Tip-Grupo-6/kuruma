@@ -9,6 +9,8 @@ data class Notification(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
+    @Column(name = "user_id")
+    var userId: Long? = null,
     @Column(name = "car_id")
     var carId: Long? = null,
     @Column(name = "maintenance_item_id")
